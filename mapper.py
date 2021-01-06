@@ -21,14 +21,7 @@ class Mapper:
         self.node_count = 0
         for start, end in self.intervals:
             # Get vertices in this interval.
-            def f(x):
-                "Sorts by number."
-                _, n = x
-                return start <= n and n <= end
-            def s(x):
-                "Selects index."
-                return x[0]
-            indices = np.array(list(map(s, filter(f, enumerate(self.numbers)))))
+            indices = self.find_interval_vertices(start, end)
             interval_vertices = vertices[indices]
 
             # Cluster vertices in this interval.
@@ -40,6 +33,20 @@ class Mapper:
                 global_node_index = self.node_count + local_node
                 self.vertex_nodes[vertex_index] = global_node_index
             self.node_count += max(local_nodes) + 1
+
+    def find_interval_vertices(self, start, end):
+        "Finds indices of vertices that lie in the specified interval."
+
+        def f(x):
+            "Sorts by number."
+            _, n = x
+            return start <= n and n <= end
+
+        def s(x):
+            "Selects index."
+            return x[0]
+
+        return np.array(list(map(s, filter(f, enumerate(self.numbers)))))
 
     def plot_vertices(self):
         fig = plt.figure()

@@ -1,7 +1,10 @@
+# %%
 import numpy as np
+import matplotlib.pyplot as plt
 import sklearn.cluster
 import mapper as m
 
+# %%
 class HeightFilter(m.Filter):
     """
     Uses last coordinate of vertices.
@@ -54,6 +57,7 @@ mapper.clustering = SciKitClustering(sklearn.cluster.AgglomerativeClustering(
     distance_threshold=0.2
 ))
 
+# %%
 def noisy_circle(points=100, noise=0.1):
     """
     Generates points of a noisy circle (with radius 1).
@@ -69,3 +73,15 @@ def noisy_circle(points=100, noise=0.1):
     y = np.random.normal(y, noise)
 
     return np.vstack((x, y)).T
+
+vertices = noisy_circle()
+
+# %%
+# Plot vertices.
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(vertices[:, 0], vertices[:, 1])
+ax.set_aspect('equal')
+plt.show()
+
+# %%

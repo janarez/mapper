@@ -53,6 +53,7 @@ class Mapper:
         ax = fig.add_subplot(111)
         sc = ax.scatter(self.vertices[:, 0], self.vertices[:, 1], c=self.numbers)
         ax.set_aspect('equal')
+        fig.suptitle(f'Vertices ({len(self.vertices)})')
         plt.colorbar(sc)
         plt.show()
 
@@ -70,6 +71,7 @@ class Mapper:
                 c=interval_numbers,
                 norm=n
             )
+        fig.suptitle(f'Intervals ({len(self.intervals)})')
         plt.show()
 
     def plot_clusters(self):
@@ -84,6 +86,7 @@ class Mapper:
                 interval_vertices[:, 0], interval_vertices[:, 1],
                 c=local_nodes
             )
+        fig.suptitle(f'Clusters ({self.node_count})')
         plt.show()
 
 class Filter:

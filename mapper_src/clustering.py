@@ -23,4 +23,17 @@ class Clustering:
       
     def __call__(self, vertices, distance):
         self._clustering.set_params(**{self._distance_param : distance})
+        self._vertex_count = len(vertices)
         return self._clustering.fit_predict(vertices)
+
+    def cluster_labels(self):
+        """
+        Transforms list of labels into list where each label has set
+        of indices belonging to it.
+        """
+        labels = self._clustering.labels_
+        label_indices = [set() for _ in range(self._clustering.n_clusters_)]
+        for l, i in zip(labels, range(self._vertex_count)):
+            label_indices[l].add(i)
+
+        return label_indices

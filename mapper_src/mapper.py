@@ -28,19 +28,34 @@ class Mapper:
         self.intervals.sort(key=lambda t: (t[0], t[1]))
         self._assign_partitions()
 
-        for indices in self.partitions.values():
+        # Collect all clusters - a.k.a graph nodes 
+        # and their intersections - a.k.a graph edges.
+        node_index = 0
+        self.nodes = {}
+        prev_clusters = []
+        prev_node_index = 0
 
+        for indices in self.partitions.values():
+            
             # Cluster vertices in this partion.
             convert_indices = operator.itemgetter(*indices)
-            local_nodes = self.clustering(convert_indices(self.vertices) , self._clustering_distance)
+            self.clustering(convert_indices(self.vertices) , self._clustering_distance)
+            interval_clusters = self.clustering.cluster_labels()
 
-            # # Append to global node list.
-            # for local_node, vertex_index in zip(local_nodes, indices):
-            #     # Shift local node index to make it unique among global nodes.
-            #     global_node_index = self.node_count + local_node
-            #     self.vertex_nodes[vertex_index] = global_node_index
-            # self.node_count += max(local_nodes) + 1
+            # Find connections.
+            for cluster_a in interval_clusters:
+                self.nodes[node_index] = []
+                # Counting on sorted 1D intervals.
+                for offset, cluster_b in enumerate(prev_clusters):
+                    if len(cluster_a & cluster_b) != 0:
+                        self.nodes[node_index].append(prev_node_index+offset)
+                node_index += 1
 
+            prev_clusters = interval_clusters
+            prev_node_index = node_index - len(interval_clusters)
+
+        return self.nodes
+        
     def _assign_partitions(self):
         "Distributes vertices to cover partitions given by intervals."
         self.partitions = defaultdict(set)
@@ -58,7 +73,6 @@ class Mapper:
                     break   # Too large.
                 elif b < n:
                     unused += 1 # Too low.
-        
 
     def plot_vertices(self):
         fig = plt.figure()
@@ -78,7 +92,7 @@ class Mapper:
             interval_vertices = convert_indices(self.vertices)
             interval_numbers = convert_indices(self.numbers)
 
-            ax[len(self.intervals) - i - 1].scatter(
+            ax[len(self.intervals)-i-1].scatter(
                 np.array(interval_vertices)[:, 0], 
                 np.array(interval_vertices)[:, 1],
                 c=interval_numbers,
@@ -89,17 +103,20 @@ class Mapper:
 
     def plot_clusters(self):
         fig = plt.figure()
-        axs = fig.subplots(len(self.intervals), sharex=True)
-        for ax, (start, end) in zip(reversed(axs), self.intervals):
-            indices = self.find_interval_vertices(start, end)
-            interval_vertices = self.vertices[indices]
-            local_nodes = self.clustering(interval_vertices, self._clustering_distance)
+        ax = fig.subplots(len(self.intervals), sharex=True)
 
-            ax.scatter(
-                interval_vertices[:, 0], interval_vertices[:, 1],
-                c=local_nodes
+        for i, indices in self.partitions.items():
+            convert_indices = operator.itemgetter(*indices)
+            interval_vertices = convert_indices(self.vertices)
+            interval_clusters = self.clustering(interval_vertices, self._clustering_distance)
+
+            ax[len(self.intervals)-i-1].scatter(
+                np.array(interval_vertices)[:, 0], 
+                np.array(interval_vertices)[:, 1],
+                c=interval_clusters
             )
-        fig.suptitle(f'Clusters ({self.node_count})')
+
+        fig.suptitle(f'Clusters (COUNT HERE)')
         plt.show()
 
 

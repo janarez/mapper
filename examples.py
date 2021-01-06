@@ -1,7 +1,5 @@
 import numpy as np
 from mapper_src.mapper import Mapper
-from mapper_src.clusterer import SciKitClustering
-import sklearn.cluster
 
 
 def noisy_circle(points=100, noise=0.1):
@@ -23,11 +21,7 @@ def noisy_circle(points=100, noise=0.1):
 vertices = noisy_circle()
 
 
-mapper = Mapper()
-mapper.clustering = SciKitClustering(sklearn.cluster.AgglomerativeClustering(
-    n_clusters=None,
-    distance_threshold=2
-))
+mapper = Mapper(distance=1)
 
 mapper.process(vertices)
 mapper.plot_vertices()

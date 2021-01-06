@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mapper_src.filter import Filter
-from mapper_src.clusterer import Clustering
+from mapper_src.clustering import Clustering
 from mapper_src.cover import Cover
 
 
@@ -9,7 +9,8 @@ class Mapper:
     def __init__(self, **kwargs):
         self.filter = Filter(kwargs.get('filter_function', 'last_coordinate'))
         self.cover = Cover(kwargs.get('cover_function', 'linear'), **kwargs)
-        self.clustering = Clustering()
+        self.clustering = Clustering(kwargs.get('clustering_function', 'agglomerative'))
+        self._clustering_distance = kwargs.get('distance', 2)
 
     def process(self, vertices):
         """
@@ -29,7 +30,7 @@ class Mapper:
             interval_vertices = vertices[indices]
 
             # Cluster vertices in this interval.
-            local_nodes = self.clustering(interval_vertices)
+            local_nodes = self.clustering(interval_vertices, self._clustering_distance)
 
             # Append to global node list.
             for local_node, vertex_index in zip(local_nodes, indices):
@@ -84,7 +85,7 @@ class Mapper:
         for ax, (start, end) in zip(reversed(axs), self.intervals):
             indices = self.find_interval_vertices(start, end)
             interval_vertices = self.vertices[indices]
-            local_nodes = self.clustering(interval_vertices)
+            local_nodes = self.clustering(interval_vertices, self._clustering_distance)
 
             ax.scatter(
                 interval_vertices[:, 0], interval_vertices[:, 1],

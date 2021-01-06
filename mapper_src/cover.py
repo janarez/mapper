@@ -38,4 +38,4 @@ class Cover:
                  start + bin_size * (i + 1)]
                 for i in range(bins)]
 
-        return np.array(bin_intervals)
+        return bin_intervals

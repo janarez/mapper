@@ -23,5 +23,4 @@ class Clustering:
       
     def __call__(self, vertices, distance):
         self._clustering.set_params(**{self._distance_param : distance})
-        self._clustering.fit(vertices)
-        return self._clustering.labels_
+        return self._clustering.fit_predict(vertices)

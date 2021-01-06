@@ -23,7 +23,7 @@ vertices = noisy_circle()
 
 mapper = Mapper(distance=1)
 
-mapper.process(vertices)
+mapper.fit(vertices)
 mapper.plot_vertices()
 mapper.plot_intervals()
-mapper.plot_clusters()
+#mapper.plot_clusters()

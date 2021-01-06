@@ -33,15 +33,11 @@ class Mapper:
             local_nodes = self.clustering(interval_vertices)
 
             # Append to global node list.
-            for node in local_nodes:
-
-                # Add this node.
-                node_index = self.node_count
-                self.node_count += 1
-
-                # Add this node's vertices.
-                for vertex_index in node:
-                    self.vertex_nodes[vertex_index] = node_index
+            for vertex_index in indices:
+                # Shift local node index to make it unique among global nodes.
+                global_node_index = self.node_count + local_nodes[vertex_index]
+                self.vertex_nodes[vertex_index] = global_node_index
+            self.node_count += max(local_nodes) + 1
 
 class Filter:
     """
@@ -54,7 +50,7 @@ class Filter:
 class Partitioner:
     """
     Function that partitions numbers to overlapping intervals.
-    Returns list of intervals (each interval is tuple of numbers).
+    Returns list of intervals (each interval is a pair of numbers - bounds).
     """
 
     def __call__(self, numbers):
@@ -63,8 +59,8 @@ class Partitioner:
 class Clustering:
     """
     Function clustering vertices to nodes.
-    Returns list of nodes (each node is list of indices).
+    Returns list of node indices for each vertex.
     """
 
     def __call__(self, vertices):
-        return np.array(np.arange(len(vertices))) # one node
+        return np.zeros(len(vertices)) # one node

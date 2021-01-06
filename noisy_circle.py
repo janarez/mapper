@@ -77,14 +77,15 @@ def noisy_circle(points=100, noise=0.1):
 vertices = noisy_circle()
 
 # %%
-# Plot vertices.
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.scatter(vertices[:, 0], vertices[:, 1])
-ax.set_aspect('equal')
-plt.show()
+mapper.process(vertices)
 
 # %%
-mapper.process(vertices)
+# Plot vertices (colored by filter).
+fig = plt.figure()
+ax = fig.add_subplot(111)
+sc = ax.scatter(vertices[:, 0], vertices[:, 1], c=mapper.numbers)
+ax.set_aspect('equal')
+plt.colorbar(sc)
+plt.show()
 
 # %%

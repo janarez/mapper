@@ -33,7 +33,7 @@ class BinPartitioner(m.Partitioner):
 
         # Compute intervals.
         bins = [[start + (bin_size - bin_overlap) * i,
-                 start + bin_size * i]
+                 start + bin_size * (i + 1)]
                 for i in range(self.n)]
         return np.array(bins)
 
@@ -83,5 +83,8 @@ ax = fig.add_subplot(111)
 ax.scatter(vertices[:, 0], vertices[:, 1])
 ax.set_aspect('equal')
 plt.show()
+
+# %%
+mapper.process(vertices)
 
 # %%

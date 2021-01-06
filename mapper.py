@@ -33,9 +33,9 @@ class Mapper:
             local_nodes = self.clustering(interval_vertices)
 
             # Append to global node list.
-            for vertex_index in indices:
+            for local_node, vertex_index in zip(local_nodes, indices):
                 # Shift local node index to make it unique among global nodes.
-                global_node_index = self.node_count + local_nodes[vertex_index]
+                global_node_index = self.node_count + local_node
                 self.vertex_nodes[vertex_index] = global_node_index
             self.node_count += max(local_nodes) + 1
 

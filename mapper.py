@@ -56,6 +56,22 @@ class Mapper:
         plt.colorbar(sc)
         plt.show()
 
+    def plot_intervals(self):
+        fig = plt.figure()
+        axs = fig.subplots(len(self.intervals), sharex=True)
+        n = plt.Normalize(min(self.numbers), max(self.numbers))
+        for ax, (start, end) in zip(reversed(axs), self.intervals):
+            indices = self.find_interval_vertices(start, end)
+            interval_vertices = self.vertices[indices]
+            interval_numbers = self.numbers[indices]
+
+            ax.scatter(
+                interval_vertices[:, 0], interval_vertices[:, 1],
+                c=interval_numbers,
+                norm=n
+            )
+        plt.show()
+
 class Filter:
     """
     Function from vertices to some number (e.g., distance).

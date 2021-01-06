@@ -79,5 +79,6 @@ vertices = noisy_circle()
 # %%
 mapper.process(vertices)
 mapper.plot_vertices()
+mapper.plot_intervals()
 
 # %%

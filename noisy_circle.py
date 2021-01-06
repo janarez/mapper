@@ -78,14 +78,6 @@ vertices = noisy_circle()
 
 # %%
 mapper.process(vertices)
-
-# %%
-# Plot vertices (colored by filter).
-fig = plt.figure()
-ax = fig.add_subplot(111)
-sc = ax.scatter(vertices[:, 0], vertices[:, 1], c=mapper.numbers)
-ax.set_aspect('equal')
-plt.colorbar(sc)
-plt.show()
+mapper.plot_vertices()
 
 # %%

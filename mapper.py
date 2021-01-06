@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Mapper:
     def __init__(self):
@@ -11,6 +12,7 @@ class Mapper:
         Processes `vertices` and saves the results for further analysis.
         """
 
+        self.vertices = vertices
         self.numbers = self.filter(vertices)
         self.intervals = self.partitioner(self.numbers)
 
@@ -38,6 +40,14 @@ class Mapper:
                 global_node_index = self.node_count + local_node
                 self.vertex_nodes[vertex_index] = global_node_index
             self.node_count += max(local_nodes) + 1
+
+    def plot_vertices(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        sc = ax.scatter(self.vertices[:, 0], self.vertices[:, 1], c=self.numbers)
+        ax.set_aspect('equal')
+        plt.colorbar(sc)
+        plt.show()
 
 class Filter:
     """

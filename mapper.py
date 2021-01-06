@@ -72,6 +72,20 @@ class Mapper:
             )
         plt.show()
 
+    def plot_clusters(self):
+        fig = plt.figure()
+        axs = fig.subplots(len(self.intervals), sharex=True)
+        for ax, (start, end) in zip(reversed(axs), self.intervals):
+            indices = self.find_interval_vertices(start, end)
+            interval_vertices = self.vertices[indices]
+            local_nodes = self.clustering(interval_vertices)
+
+            ax.scatter(
+                interval_vertices[:, 0], interval_vertices[:, 1],
+                c=local_nodes
+            )
+        plt.show()
+
 class Filter:
     """
     Function from vertices to some number (e.g., distance).

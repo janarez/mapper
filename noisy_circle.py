@@ -54,7 +54,7 @@ mapper.filter = HeightFilter()
 mapper.partitioner = BinPartitioner(5, 0.25)
 mapper.clustering = SciKitClustering(sklearn.cluster.AgglomerativeClustering(
     n_clusters=None,
-    distance_threshold=0.2
+    distance_threshold=2
 ))
 
 # %%
@@ -80,5 +80,6 @@ vertices = noisy_circle()
 mapper.process(vertices)
 mapper.plot_vertices()
 mapper.plot_intervals()
+mapper.plot_clusters()
 
 # %%

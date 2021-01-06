@@ -1,7 +1,6 @@
 import numpy as np
 from mapper_src.mapper import Mapper
 from mapper_src.clusterer import SciKitClustering
-from mapper_src.partitioner import BinPartitioner
 import sklearn.cluster
 
 
@@ -25,7 +24,6 @@ vertices = noisy_circle()
 
 
 mapper = Mapper()
-mapper.partitioner = BinPartitioner(5, 0.25)
 mapper.clustering = SciKitClustering(sklearn.cluster.AgglomerativeClustering(
     n_clusters=None,
     distance_threshold=2

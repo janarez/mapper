@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mapper_src.filter import Filter
 from mapper_src.clusterer import Clustering
-from mapper_src.partitioner import Partitioner
+from mapper_src.cover import Cover
 
 
 class Mapper:
     def __init__(self, **kwargs):
         self.filter = Filter(kwargs.get('filter_function', 'last_coordinate'))
-        self.partitioner = Partitioner()
+        self.cover = Cover(kwargs.get('cover_function', 'linear'), **kwargs)
         self.clustering = Clustering()
 
     def process(self, vertices):
@@ -18,7 +18,7 @@ class Mapper:
 
         self.vertices = vertices
         self.numbers = self.filter(vertices)
-        self.intervals = self.partitioner(self.numbers)
+        self.intervals = self.cover(self.numbers)
 
         # Cluster each interval.
         self.vertex_nodes = np.zeros(len(vertices)) # index of node for each vertex

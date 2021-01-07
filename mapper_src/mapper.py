@@ -1,10 +1,12 @@
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import operator
+
 from mapper_src.filter import Filter
 from mapper_src.clustering import Clustering
 from mapper_src.cover import Cover
-import operator
 
 
 class Mapper:
@@ -74,6 +76,24 @@ class Mapper:
                     break   # Too large.
                 elif b < n:
                     unused += 1 # Too low.
+
+    def plot_vertices_3d(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        sc = ax.scatter(np.array(self.vertices)[:, 0], np.array(self.vertices)[:, 1], np.array(self.vertices)[:, 2], c=self.numbers)
+        ax.set_box_aspect(
+            (
+                np.ptp(np.array(self.vertices)[:, 0]), 
+                np.ptp(np.array(self.vertices)[:, 1]), 
+                np.ptp(np.array(self.vertices)[:, 2])
+            )
+        )
+
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        plt.colorbar(sc)
+        plt.show()
 
     def plot_vertices(self):
         fig = plt.figure()

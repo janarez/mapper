@@ -177,11 +177,9 @@ class Mapper:
         plt.xlim([np.min(np.array(self.vertices)[:,0]), np.max(np.array(self.vertices)[:,0])])
         plt.ylim([np.min(np.array(self.vertices)[:,1]), np.max(np.array(self.vertices)[:,1])])
 
-        # Plot the resulting triangulation.
         # Vertices.
         plt.plot(*zip(*self.node_vertices), 'ko', markersize=10)
         for a, a_neighors in self.nodes.items():
-            print(a, a_neighors)
             for b in a_neighors:
                 vertex_a = self.node_vertices[a]
                 vertex_b = self.node_vertices[b]

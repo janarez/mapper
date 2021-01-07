@@ -20,11 +20,16 @@ def noisy_circle(points=100, noise=0.1):
 
 vertices = noisy_circle()
 
+with open('pliers.txt') as f:
+    data = f.readlines()
 
-mapper = Mapper(distance=5.3, linkage="average")
+points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 
-graph = mapper.fit(vertices)
-mapper.plot_vertices()
-mapper.plot_intervals()
-mapper.plot_clusters()
+
+mapper = Mapper(distance=200, linkage="average")
+
+graph = mapper.fit(points)
+mapper.plot_vertices_3d()
+mapper.plot_intervals_3d()
+# mapper.plot_clusters()
 mapper.plot_graph()

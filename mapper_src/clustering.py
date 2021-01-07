@@ -1,3 +1,5 @@
+import operator
+import numpy as np
 from sklearn.cluster import AgglomerativeClustering, DBSCAN
 
 class Clustering:
@@ -23,17 +25,19 @@ class Clustering:
       
     def __call__(self, vertices, distance):
         self._clustering.set_params(**{self._distance_param : distance})
-        self._vertex_count = len(vertices)
-        return self._clustering.fit_predict(vertices)
-
-    def cluster_labels(self):
-        """
-        Transforms list of labels into list where each label has set
-        of indices belonging to it.
-        """
-        labels = self._clustering.labels_
+        labels = self._clustering.fit_predict(vertices)
         label_indices = [set() for _ in range(self._clustering.n_clusters_)]
-        for l, i in zip(labels, range(self._vertex_count)):
-            label_indices[l].add(i)
 
-        return label_indices
+        # Divide indices by labels.
+        for i, l in enumerate(labels):
+            label_indices[l].add(i)
+            
+        # Calculate center of each cluster.
+        cluster_centers = []
+        for indices in label_indices:
+            convert_indices = operator.itemgetter(*indices)
+            cluster_vertices = np.array(convert_indices(vertices))
+            x, y = np.mean(cluster_vertices[:, 0]), np.mean(cluster_vertices[:, 1])
+            cluster_centers.append((x, y))
+
+        return labels, label_indices, cluster_centers

@@ -21,9 +21,10 @@ def noisy_circle(points=100, noise=0.1):
 vertices = noisy_circle()
 
 
-mapper = Mapper(distance=1)
+mapper = Mapper(distance=5)
 
 graph = mapper.fit(vertices)
 mapper.plot_vertices()
 mapper.plot_intervals()
 mapper.plot_clusters()
+mapper.plot_graph()

@@ -40,7 +40,7 @@ class Mapper:
             
             # Cluster vertices in this partion.
             convert_indices = operator.itemgetter(*indices)
-            _, interval_clusters, cluster_centers = self.clustering(convert_indices(self.vertices) , self._clustering_distance)
+            _, interval_clusters, cluster_centers = self.clustering(convert_indices(self.vertices), indices, self._clustering_distance)
 
             # Find connections.
             for cluster_a, cluster_a_center in zip(interval_clusters, cluster_centers):
@@ -109,7 +109,7 @@ class Mapper:
         for i, indices in self.partitions.items():
             convert_indices = operator.itemgetter(*indices)
             interval_vertices = convert_indices(self.vertices)
-            labels, _, cluster_centers = self.clustering(interval_vertices, self._clustering_distance)
+            labels, _, cluster_centers = self.clustering(interval_vertices, indices, self._clustering_distance)
 
             ax[len(self.intervals)-i-1].scatter(
                 np.array(interval_vertices)[:, 0], 
@@ -144,7 +144,3 @@ class Mapper:
 
         fig.suptitle(f'Mapper graph')
         plt.show()
-
-
-
-

@@ -23,21 +23,18 @@ class Clustering:
         else:
             raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "DBSCAN".')
       
-    def __call__(self, vertices, distance):
+    def __call__(self, vertices, indices, distance):
         self._clustering.set_params(**{self._distance_param : distance})
         labels = self._clustering.fit_predict(vertices)
-        label_indices = [set() for _ in range(self._clustering.n_clusters_)]
 
+        label_indices = [set() for _ in range(self._clustering.n_clusters_)]
+        cluster_vertices = [list() for _ in range(self._clustering.n_clusters_)]
         # Divide indices by labels.
-        for i, l in enumerate(labels):
+        for index, (i, l) in enumerate(zip(indices, labels)):
             label_indices[l].add(i)
-            
+            cluster_vertices[l].append(vertices[index])
+
         # Calculate center of each cluster.
-        cluster_centers = []
-        for indices in label_indices:
-            convert_indices = operator.itemgetter(*indices)
-            cluster_vertices = np.array(convert_indices(vertices))
-            x, y = np.mean(cluster_vertices[:, 0]), np.mean(cluster_vertices[:, 1])
-            cluster_centers.append((x, y))
+        cluster_centers = [(np.mean(np.array(c)[:, 0]), np.mean(np.array(c)[:, 1])) for c in cluster_vertices]
 
         return labels, label_indices, cluster_centers

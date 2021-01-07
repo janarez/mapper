@@ -21,7 +21,7 @@ def noisy_circle(points=100, noise=0.1):
 vertices = noisy_circle()
 
 
-mapper = Mapper(distance=5)
+mapper = Mapper(distance=5.3, linkage="average")
 
 graph = mapper.fit(vertices)
 mapper.plot_vertices()

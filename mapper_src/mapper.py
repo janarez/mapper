@@ -24,6 +24,7 @@ class Mapper:
         self.vertices = vertices
         self.numbers = self.filter(vertices)
         self.intervals = self.cover(self.numbers)
+        self.n_intervals = len(self.intervals)
 
         # Sort intervals and numbers so that we assign them in order into partitions.
         self.numbers, self.vertices = zip(*sorted(zip(self.numbers, self.vertices), key=lambda t: t[0]))
@@ -104,39 +105,69 @@ class Mapper:
         plt.colorbar(sc)
         plt.show()
 
+    def plot_intervals_3d(self):
+        fig = plt.figure(figsize=plt.figaspect(self.n_intervals))
+        n = plt.Normalize(min(self.numbers), max(self.numbers))
+
+        for i, indices in self.partitions.items():
+            ax = fig.add_subplot(self.n_intervals, 1, self.n_intervals-i, projection='3d')
+            convert_indices = operator.itemgetter(*indices)
+            interval_vertices = convert_indices(self.vertices)
+            interval_numbers = convert_indices(self.numbers)
+
+            ax.scatter(
+                np.array(interval_vertices)[:, 0], 
+                np.array(interval_vertices)[:, 1], 
+                np.array(interval_vertices)[:, 2], 
+                c=interval_numbers,
+                norm=n
+            )
+        
+            ax.set_box_aspect((
+                np.ptp(np.array(self.vertices)[:, 0]), 
+                np.ptp(np.array(self.vertices)[:, 1]), 
+                np.ptp(np.array(self.vertices)[:, 2])
+            ))
+
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+
+        plt.show()
+
     def plot_intervals(self):
         fig = plt.figure()
-        ax = fig.subplots(len(self.intervals), sharex=True)
+        ax = fig.subplots(self.n_intervals, sharex=True)
         n = plt.Normalize(min(self.numbers), max(self.numbers))
         for i, indices in self.partitions.items():
             convert_indices = operator.itemgetter(*indices)
             interval_vertices = convert_indices(self.vertices)
             interval_numbers = convert_indices(self.numbers)
 
-            ax[len(self.intervals)-i-1].scatter(
+            ax[self.n_intervals-i-1].scatter(
                 np.array(interval_vertices)[:, 0], 
                 np.array(interval_vertices)[:, 1],
                 c=interval_numbers,
                 norm=n
             )
-        fig.suptitle(f'Intervals ({len(self.intervals)})')
+        fig.suptitle(f'Intervals ({self.n_intervals})')
         plt.show()
 
     def plot_clusters(self):
         fig = plt.figure()
-        ax = fig.subplots(len(self.intervals), sharex=True)
+        ax = fig.subplots(self.n_intervals, sharex=True)
 
         for i, indices in self.partitions.items():
             convert_indices = operator.itemgetter(*indices)
             interval_vertices = convert_indices(self.vertices)
             labels, _, cluster_centers = self.clustering(interval_vertices, indices, self._clustering_distance)
 
-            ax[len(self.intervals)-i-1].scatter(
+            ax[self.n_intervals-i-1].scatter(
                 np.array(interval_vertices)[:, 0], 
                 np.array(interval_vertices)[:, 1],
                 c=labels
             )
-            ax[len(self.intervals)-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
+            ax[self.n_intervals-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
 
         fig.suptitle(f'Clusters (COUNT HERE)')
         plt.show()

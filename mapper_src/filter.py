@@ -6,8 +6,7 @@ class Filter:
     """
     def __init__(self, filter_function='by_coordinate', **kwargs):
         self._filter_function = filter_function
-        if filter_function == 'by_coordinate':
-            self._coordinate = kwargs.get('coordinate', -1)
+        self.coordinate = kwargs.get('coordinate', -1) if filter_function == 'by_coordinate' else None
 
     def __call__(self, vertices):
         if self._filter_function == 'by_coordinate':
@@ -21,7 +20,7 @@ class Filter:
         """
         Uses last coordinate of vertices.
         """
-        return vertices[:, self._coordinate]
+        return vertices[:, self.coordinate]
 
 
     def _distance_from_origin(self, vertices):

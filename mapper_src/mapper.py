@@ -17,7 +17,7 @@ class Mapper:
         self.clustering = Clustering(**kwargs)
 
         # Coordinate for subplot splitting.
-        self._coordinate = kwargs.get('coordinate', -1)
+        self._coordinate = self.filter.coordinate
 
 
     def fit(self, vertices):
@@ -104,8 +104,8 @@ class Mapper:
             ax.set_xlim3d(*self._plot_lim[0])
         if self._coordinate != 1:
             ax.set_ylim3d(*self._plot_lim[1])
-        if self._coordinate != 2 or self._coordinate != -1:
-            ax.set_ylim3d(*self._plot_lim[2])
+        if not (self._coordinate == 2 or self._coordinate == -1):
+            ax.set_zlim3d(*self._plot_lim[2])
 
 
     def _compute_persistent_homology(self):
@@ -206,14 +206,15 @@ class Mapper:
             interval_vertices = convert_indices(self.vertices)
             labels, _, cluster_centers = self.clustering(interval_vertices, indices)
 
-            # ax.scatter(
-            #     np.array(interval_vertices)[:, 0],
-            #     np.array(interval_vertices)[:, 1],
-            #     np.array(interval_vertices)[:, 2],
-            #     c=labels
-            # )
+            ax.scatter(
+                np.array(interval_vertices)[:, 0],
+                np.array(interval_vertices)[:, 1],
+                np.array(interval_vertices)[:, 2],
+                c=labels
+            )
             ax.scatter(*zip(*cluster_centers), 'ro')
 
+            self._limit_axis(ax)
             ax.set_box_aspect(self._plot_box_aspect)
             ax.set_xlabel('X')
             ax.set_ylabel('Y')
@@ -251,9 +252,7 @@ class Mapper:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.scatter(*zip(*self.node_vertices))
-        ax.set_box_aspect(
-
-        )
+        ax.set_box_aspect(self._plot_box_aspect)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')

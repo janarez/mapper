@@ -10,7 +10,7 @@ def torus():
     x = (b + a*np.cos(u)) * np.cos(v)
     y = (b + a*np.cos(u)) * np.sin(v)
     z = a * np.sin(u)
-    
+
     return np.vstack((x.ravel(), y.ravel(), z.ravel())).T
 
 points = torus()
@@ -18,12 +18,13 @@ points = torus()
 
 mapper = Mapper(
     filter_function='distance_from_origin',
-    distance=2, linkage="average"
+    clustering_function='agglomerative',
+    linkage="average"
 )
 
 graph = mapper.fit(points)
 mapper.plot_vertices_3d()
 mapper.plot_intervals_3d()
-mapper.plot_clusters()
-mapper.plot_graph()
+mapper.plot_clusters_3d()
+mapper.plot_graph_3d()
 mapper.plot_persistence_homology()

@@ -6,7 +6,7 @@ class Cover:
     Function that partitions numbers to overlapping intervals.
     Returns list of intervals (each interval is a pair of numbers - bounds).
     """
-    def __init__(self, cover_function, **kwargs):
+    def __init__(self, cover_function='linear', **kwargs):
         if cover_function == 'linear':
             self._cover_function = partial(
                 self._linear,
@@ -15,7 +15,7 @@ class Cover:
             )
         else:
             raise ValueError(f'Argument `cover_function` must be one of: "linear".')
-      
+
 
     def __call__(self, numbers):
         return self._cover_function(numbers)

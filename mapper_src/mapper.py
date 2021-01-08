@@ -84,12 +84,14 @@ class Mapper:
     def _compute_persistent_homology(self):
         "Computes persistence homology of the graph."
 
-        self.st = gudhi.SimplexTree()
+        self.rips = gudhi.RipsComplex(
+            points=self.node_vertices,
+            max_edge_length=40
+        )
         
-        # Insert all edges.
-        for u, neighbors in self.nodes.items():
-            for v in neighbors:
-                self.st.insert([u, v])
+        self.st = self.rips.create_simplex_tree(
+            max_dimension=2
+        )
 
         # Compute persistence diagram.
         self.diag = self.st.persistence(

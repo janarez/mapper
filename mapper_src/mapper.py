@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import operator
+import gudhi
 
 from mapper_src.filter import Filter
 from mapper_src.clustering import Clustering
@@ -58,6 +59,8 @@ class Mapper:
             prev_clusters = interval_clusters
             prev_node_index = node_index - len(interval_clusters)
 
+        self._compute_persistent_homology()
+
         return self.nodes
         
     def _assign_partitions(self):
@@ -77,6 +80,22 @@ class Mapper:
                     break   # Too large.
                 elif b < n:
                     unused += 1 # Too low.
+
+    def _compute_persistent_homology(self):
+        "Computes persistence homology of the graph."
+
+        self.st = gudhi.SimplexTree()
+        
+        # Insert all edges.
+        for u, neighbors in self.nodes.items():
+            for v in neighbors:
+                self.st.insert([u, v])
+
+        # Compute persistence diagram.
+        self.diag = self.st.persistence(
+            homology_coeff_field=2,
+            min_persistence=0
+        )
 
     def plot_vertices_3d(self):
         fig = plt.figure()
@@ -192,4 +211,8 @@ class Mapper:
                 )
 
         fig.suptitle(f'Mapper graph')
+        plt.show()
+
+    def plot_persistence_diagram(self):
+        gudhi.plot_persistence_diagram(self.diag)
         plt.show()

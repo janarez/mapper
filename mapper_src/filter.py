@@ -14,11 +14,11 @@ class Filter:
         elif self._filter_function == 'distance_from_origin':
             return self._distance_from_origin(vertices)
         else:
-            raise ValueError(f'Argument `filter_function` must be one of: "last_coordinate", "distance_from_origin".')
+            raise ValueError(f'Argument `filter_function` must be one of: "by_coordinate", "distance_from_origin".')
 
     def _by_coordinate(self, vertices):
         """
-        Uses last coordinate of vertices.
+        Uses the specified coordinate (default is last) of vertices.
         """
         return vertices[:, self.coordinate]
 

@@ -17,7 +17,8 @@ points = torus()
 
 
 mapper = Mapper(
-    filter_function='distance_from_origin',
+    filter_function='by_coordinate',
+    coordinate=1,
     clustering_function='agglomerative',
     linkage="average"
 )

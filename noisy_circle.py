@@ -18,18 +18,14 @@ def noisy_circle(points=100, noise=0.1):
 
     return np.vstack((x, y)).T
 
-vertices = noisy_circle()
-
-with open('pliers.txt') as f:
-    data = f.readlines()
-
-points = np.array([list(map(float, p.strip().split(' '))) for p in data])
+points = noisy_circle()
 
 
-mapper = Mapper(distance=200, linkage="average")
+mapper = Mapper(distance=2, linkage="average")
 
 graph = mapper.fit(points)
-mapper.plot_vertices_3d()
-mapper.plot_intervals_3d()
-# mapper.plot_clusters()
+mapper.plot_vertices()
+mapper.plot_intervals()
+mapper.plot_clusters()
 mapper.plot_graph()
+mapper.plot_persistence_homology()

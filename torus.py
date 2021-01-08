@@ -16,7 +16,10 @@ def torus():
 points = torus()
 
 
-mapper = Mapper(distance=2, linkage="average")
+mapper = Mapper(
+    filter_function='distance_from_origin',
+    distance=2, linkage="average"
+)
 
 graph = mapper.fit(points)
 mapper.plot_vertices_3d()

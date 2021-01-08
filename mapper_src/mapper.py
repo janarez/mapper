@@ -216,8 +216,8 @@ class Mapper:
         plt.show()
 
     def plot_persistence_homology(self):
-        gudhi.plot_persistence_barcode(self.diag)
+        gudhi.plot_persistence_barcode(self.diag, legend=True)
         plt.show()
 
-        gudhi.plot_persistence_diagram(self.diag)
+        gudhi.plot_persistence_diagram(self.diag, legend=True)
         plt.show()

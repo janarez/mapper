@@ -213,6 +213,9 @@ class Mapper:
         fig.suptitle(f'Mapper graph')
         plt.show()
 
-    def plot_persistence_diagram(self):
+    def plot_persistence_homology(self):
+        gudhi.plot_persistence_barcode(self.diag)
+        plt.show()
+
         gudhi.plot_persistence_diagram(self.diag)
         plt.show()

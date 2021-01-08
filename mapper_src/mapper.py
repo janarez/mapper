@@ -251,8 +251,24 @@ class Mapper:
     def plot_graph_3d(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
+
+        # Plot vertices.
         ax.scatter(*zip(*self.node_vertices))
         ax.set_box_aspect(self._plot_box_aspect)
+
+        # Plot edges.
+        for a, a_neighors in self.nodes.items():
+            for b in a_neighors:
+                vertex_a = self.node_vertices[a]
+                vertex_b = self.node_vertices[b]
+                ax.plot(
+                    [vertex_a[0], vertex_b[0]],
+                    [vertex_a[1], vertex_b[1]],
+                    [vertex_a[2], vertex_b[2]],
+                    color='k',
+                    linewidth=2,
+                    zorder=0
+                )
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')

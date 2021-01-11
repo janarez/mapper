@@ -133,7 +133,7 @@ class Mapper:
     def plot_vertices_3d(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        sc = ax.scatter(
+        self._sc = ax.scatter(
             np.array(self.vertices)[:, 0],
             np.array(self.vertices)[:, 1],
             np.array(self.vertices)[:, 2],
@@ -146,7 +146,7 @@ class Mapper:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fig.suptitle(f'Vertices ({len(self.vertices)})')
-        plt.colorbar(sc)
+        plt.colorbar(self._sc)
         plt.show()
 
 
@@ -289,6 +289,7 @@ class Mapper:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
+        plt.colorbar(self._sc)
         plt.show()
 
 
@@ -310,6 +311,7 @@ class Mapper:
             vmax=self._norm.vmax
         )
         nx.draw_networkx_edges(g, pos)
+        plt.colorbar(self._sc)
         plt.plot()
 
     def plot_graph(self):

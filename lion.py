@@ -10,7 +10,7 @@ mapper = Mapper(
     overlap=0.1,
     clustering_function='tomato',
     distance=6,
-    filter_function='distance_from_origin'
+    filter_function='distance_from_point'
 )
 
 graph = mapper.fit(points)

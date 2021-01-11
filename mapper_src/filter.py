@@ -12,25 +12,16 @@ class Filter:
     def __call__(self, vertices):
         if self._filter_function == 'by_coordinate':
             return self._by_coordinate(vertices)
-        elif self._filter_function == 'distance_from_origin':
-            return self._distance_from_origin(vertices)
         elif self._filter_function == 'distance_from_point':
             return self._distance_from_point(vertices)
         else:
-            raise ValueError(f'Argument `filter_function` must be one of: "by_coordinate", "distance_from_origin", "distance_from_point".')
+            raise ValueError(f'Argument `filter_function` must be one of: "by_coordinate", "distance_from_point".')
 
     def _by_coordinate(self, vertices):
         """
         Uses the specified coordinate (default is last) of vertices.
         """
         return vertices[:, self.coordinate]
-
-
-    def _distance_from_origin(self, vertices):
-        """
-        Returns euclidean distance from origin.
-        """
-        return np.linalg.norm(vertices, axis=-1)
 
 
     def _distance_from_point(self, vertices):

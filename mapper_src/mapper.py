@@ -104,6 +104,8 @@ class Mapper:
 
         self._node_numbers = self.filter(np.array(self.node_vertices))
 
+        self._sc = None
+
     def _limit_axis(self, ax):
         if self._coordinate != 0:
             ax.set_xlim3d(*self._plot_lim[0])
@@ -291,7 +293,8 @@ class Mapper:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
-        plt.colorbar(self._sc)
+        if self._sc is not None:
+            plt.colorbar(self._sc)
         plt.show()
 
 
@@ -315,7 +318,8 @@ class Mapper:
             vmax=self._norm.vmax
         )
         nx.draw_networkx_edges(g, pos)
-        plt.colorbar(self._sc)
+        if self._sc is not None:
+            plt.colorbar(self._sc)
         plt.title(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.plot()
 

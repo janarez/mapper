@@ -2,8 +2,8 @@ import numpy as np
 from mapper_src.mapper import Mapper
 
 def torus():
-    u=np.linspace(0,2*np.pi,20)
-    v=np.linspace(0,2*np.pi,100)
+    u=np.linspace(0,2*np.pi,10)
+    v=np.linspace(0,2*np.pi,50)
     u,v=np.meshgrid(u,v)
     a = 2
     b = 9
@@ -30,6 +30,7 @@ mapper.plot_vertices_3d()
 mapper.plot_intervals_3d()
 mapper.plot_clusters_3d()
 mapper.plot_graph_3d()
+mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()
 
 # Silhouette score
@@ -46,4 +47,5 @@ mapper.plot_vertices_3d()
 mapper.plot_intervals_3d()
 mapper.plot_clusters_3d()
 mapper.plot_graph_3d()
+mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()

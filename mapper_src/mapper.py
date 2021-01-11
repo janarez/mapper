@@ -136,6 +136,7 @@ class Mapper:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
+        fig.suptitle(f'Vertices ({len(self.vertices)})')
         plt.colorbar(sc)
         plt.show()
 
@@ -174,6 +175,7 @@ class Mapper:
             ax.set_ylabel('Y')
             ax.set_zlabel('Z')
 
+        fig.suptitle(f'Intervals ({self.n_intervals})')
         plt.show()
 
 
@@ -222,7 +224,7 @@ class Mapper:
 
             cluster_count += len(cluster_centers)
 
-        fig.suptitle(f'Clusters {cluster_count}')
+        fig.suptitle(f'Clusters ({cluster_count})')
         plt.show()
 
 
@@ -244,7 +246,7 @@ class Mapper:
             ax[self.n_intervals-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
             cluster_count += len(cluster_centers)
 
-        fig.suptitle(f'Clusters {cluster_count}')
+        fig.suptitle(f'Clusters ({cluster_count})')
         plt.show()
 
 

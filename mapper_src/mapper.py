@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import operator
 import gudhi
+import networkx as nx
 
 from mapper_src.filter import Filter
 from mapper_src.clustering import Clustering
@@ -278,6 +279,21 @@ class Mapper:
         fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.show()
 
+
+    def plot_graph_in_plane(self):
+
+        # Initialize NetworkX graph.
+        g = nx.Graph()
+        for a, a_neighors in self.nodes.items():
+            for b in a_neighors:
+                g.add_edge(a, b)
+
+        # Put graph in plane.
+        pos = nx.spring_layout(g)
+
+        nx.draw_networkx_nodes(g, pos)
+        nx.draw_networkx_edges(g, pos)
+        plt.plot()
 
     def plot_graph(self):
         fig, ax = plt.subplots()

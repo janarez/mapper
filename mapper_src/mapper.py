@@ -312,6 +312,7 @@ class Mapper:
         )
         nx.draw_networkx_edges(g, pos)
         plt.colorbar(self._sc)
+        plt.title(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.plot()
 
     def plot_graph(self):

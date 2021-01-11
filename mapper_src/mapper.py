@@ -297,6 +297,8 @@ class Mapper:
 
         # Initialize NetworkX graph.
         g = nx.Graph()
+        for i in range(len(self.node_vertices)):
+            g.add_node(i)
         for a, a_neighors in self.nodes.items():
             for b in a_neighors:
                 g.add_edge(a, b)

@@ -17,9 +17,12 @@ points = torus()
 
 
 mapper = Mapper(
-    filter_function='distance_from_origin',
+    bins=4,
+    filter_function='by_coordinate',
+    coordinate=1,
     clustering_function='agglomerative',
-    linkage="average"
+    linkage="average",
+    distance=15
 )
 
 graph = mapper.fit(points)

@@ -273,7 +273,7 @@ class Mapper:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.node_vertices])}]')
+        fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.show()
 
 

@@ -165,10 +165,10 @@ class Mapper:
 
 
     def plot_intervals_3d(self):
-        fig = plt.figure(figsize=plt.figaspect(self.n_intervals))
+        fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
 
         for i, indices in self.partitions.items():
-            ax = fig.add_subplot(self.n_intervals, 1, self.n_intervals-i, projection='3d')
+            ax = fig.add_subplot(1, self.n_intervals, i + 1, projection='3d')
             convert_indices = operator.itemgetter(*indices)
             interval_vertices = convert_indices(self.vertices)
             interval_numbers = convert_indices(self.numbers)
@@ -210,11 +210,11 @@ class Mapper:
         plt.show()
 
     def plot_clusters_3d(self):
-        fig = plt.figure(figsize=plt.figaspect(self.n_intervals))
+        fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
         cluster_count = 0
 
         for i, indices in self.partitions.items():
-            ax = fig.add_subplot(self.n_intervals, 1, self.n_intervals-i, projection='3d')
+            ax = fig.add_subplot(1, self.n_intervals, i+1, projection='3d')
 
             convert_indices = operator.itemgetter(*indices)
             interval_vertices = convert_indices(self.vertices)
@@ -226,7 +226,7 @@ class Mapper:
                 np.array(interval_vertices)[:, 2],
                 c=labels
             )
-            ax.scatter(*zip(*cluster_centers), 'ro')
+            ax.scatter(*zip(*cluster_centers), 'o', s=100, c='r')
 
             self._limit_axis(ax)
             ax.set_box_aspect(self._plot_box_aspect)

@@ -63,9 +63,8 @@ class Mapper:
             prev_clusters = interval_clusters
             prev_node_index = node_index - len(interval_clusters)
 
-        self._compute_persistent_homology()
-
         self._initialise_plotting()
+        self._compute_persistent_homology()
 
         return self.nodes
 
@@ -118,17 +117,33 @@ class Mapper:
     def _compute_persistent_homology(self):
         "Computes persistence homology of the graph."
 
-        self.rips = gudhi.RipsComplex(
-            points=self.node_vertices,
-            max_edge_length=40
-        )
+        # # Compute Rips filtration on vertices.
+        # self._rips = gudhi.RipsComplex(
+        #     points=self.node_vertices,
+        #     max_edge_length=40
+        # )
+        # self._st = self._rips.create_simplex_tree(
+        #     max_dimension=2
+        # )
 
-        self.st = self.rips.create_simplex_tree(
-            max_dimension=2
-        )
+        self._st = gudhi.SimplexTree()
+
+        # Add artificial triangle.
+        n = len(self.nodes)
+        self._st.insert([0, n, n+1], filtration=self._node_numbers[0])
+
+        # Add vertices.
+        for i, n in enumerate(self._node_numbers):
+            self._st.insert([i], filtration=n)
+
+        # Add edges.
+        for a, neighbors in self.nodes.items():
+            for b in neighbors:
+                f = max(self._node_numbers[a], self._node_numbers[b])
+                self._st.insert([a, b], filtration=f)
 
         # Compute persistence diagram.
-        self.diag = self.st.persistence(
+        self.diag = self._st.persistence(
             homology_coeff_field=2,
             min_persistence=0
         )

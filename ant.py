@@ -12,7 +12,6 @@ mapper = Mapper(
     overlap=0.05,
     clustering_function='tomato',
     distance=20,
-    coordinate=1,
     filter_function='distance_from_point',
     point=np.array([60, 80, 60])
 )

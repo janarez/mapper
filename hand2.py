@@ -2,7 +2,7 @@ import numpy as np
 from mapper_src.mapper import Mapper
 
 
-with open('hand.txt') as f:
+with open('hand2.txt') as f:
     data = f.readlines()
 
 points = np.array([list(map(float, p.strip().split(' '))) for p in data])
@@ -10,7 +10,8 @@ points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 
 mapper = Mapper(
     clustering_function='tomato',
-    distance=200
+    distance=200,
+    coordinate=1
 )
 
 graph = mapper.fit(points)

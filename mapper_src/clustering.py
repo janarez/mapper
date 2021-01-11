@@ -2,7 +2,7 @@ import operator
 import sys
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, DBSCAN
-from sklearn.metrics import davies_bouldin_score
+from sklearn.metrics import davies_bouldin_score, silhouette_score
 from gudhi.clustering.tomato import Tomato
 
 class Clustering:
@@ -59,16 +59,17 @@ class Clustering:
         self._clustering.set_params(**{self._distance_param : self._distance})
 
         if self._distance is None:
-            # Find optimal number of clusters by DB score.
-            opt_db = sys.maxsize
+            # Find optimal number of clusters by silhouette score.
+            opt_sh = 0.6
+
             opt_k = 1
             for k in range(2, self._max_k+1):
                 self._clustering.n_clusters = k
                 labels = self._clustering.fit_predict(vertices)
-                db_score = davies_bouldin_score(vertices, labels)
+                sh_score = silhouette_score(vertices, labels)
 
-                if db_score < opt_db:
-                    opt_db = db_score
+                if sh_score > opt_sh:
+                    opt_sh = sh_score
                     opt_k = k
 
             self._clustering.n_clusters = opt_k

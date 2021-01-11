@@ -2,7 +2,7 @@ import numpy as np
 from mapper_src.mapper import Mapper
 
 
-with open('hand.txt') as f:
+with open('snake.txt') as f:
     data = f.readlines()
 
 points = np.array([list(map(float, p.strip().split(' '))) for p in data])

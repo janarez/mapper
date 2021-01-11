@@ -2,15 +2,15 @@ import numpy as np
 from mapper_src.mapper import Mapper
 
 
-with open('hand.txt') as f:
-    data = f.readlines()
-
-points = np.array([list(map(float, p.strip().split(' '))) for p in data])
+points = np.load('lion.npy')
 
 
 mapper = Mapper(
+    bins=7,
+    overlap=0.1,
     clustering_function='tomato',
-    distance=200
+    distance=6,
+    filter_function='distance_from_point'
 )
 
 graph = mapper.fit(points)

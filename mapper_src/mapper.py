@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import operator
 import gudhi
+import networkx as nx
 
 from mapper_src.filter import Filter
 from mapper_src.clustering import Clustering
@@ -29,8 +30,6 @@ class Mapper:
         self.numbers = self.filter(vertices)
         self.intervals = self.cover(self.numbers)
         self.n_intervals = len(self.intervals)
-
-        self._initialise_plotting()
 
         # Sort intervals and numbers so that we assign them in order into partitions.
         self.numbers, self.vertices = zip(*sorted(zip(self.numbers, self.vertices), key=lambda t: t[0]))
@@ -66,6 +65,8 @@ class Mapper:
 
         self._compute_persistent_homology()
 
+        self._initialise_plotting()
+
         return self.nodes
 
     def _assign_partitions(self):
@@ -99,6 +100,12 @@ class Mapper:
             (np.min(np.array(self.vertices)[:, 2]), np.max(np.array(self.vertices)[:, 2]))
         ]
 
+        self._norm = plt.Normalize(min(self.numbers), max(self.numbers))
+
+        self._node_numbers = self.filter(np.array(self.node_vertices))
+
+        self._sc = None
+
     def _limit_axis(self, ax):
         if self._coordinate != 0:
             ax.set_xlim3d(*self._plot_lim[0])
@@ -130,13 +137,20 @@ class Mapper:
     def plot_vertices_3d(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        sc = ax.scatter(np.array(self.vertices)[:, 0], np.array(self.vertices)[:, 1], np.array(self.vertices)[:, 2], c=self.numbers)
+        self._sc = ax.scatter(
+            np.array(self.vertices)[:, 0],
+            np.array(self.vertices)[:, 1],
+            np.array(self.vertices)[:, 2],
+            c=self.numbers,
+            norm=self._norm
+        )
         ax.set_box_aspect(self._plot_box_aspect)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        plt.colorbar(sc)
+        fig.suptitle(f'Vertices ({len(self.vertices)})')
+        plt.colorbar(self._sc)
         plt.show()
 
 
@@ -152,7 +166,6 @@ class Mapper:
 
     def plot_intervals_3d(self):
         fig = plt.figure(figsize=plt.figaspect(self.n_intervals))
-        n = plt.Normalize(min(self.numbers), max(self.numbers))
 
         for i, indices in self.partitions.items():
             ax = fig.add_subplot(self.n_intervals, 1, self.n_intervals-i, projection='3d')
@@ -165,7 +178,7 @@ class Mapper:
                 np.array(interval_vertices)[:, 1],
                 np.array(interval_vertices)[:, 2],
                 c=interval_numbers,
-                norm=n
+                norm=self._norm
             )
 
             self._limit_axis(ax)
@@ -174,6 +187,7 @@ class Mapper:
             ax.set_ylabel('Y')
             ax.set_zlabel('Z')
 
+        fig.suptitle(f'Intervals ({self.n_intervals})')
         plt.show()
 
 
@@ -222,7 +236,7 @@ class Mapper:
 
             cluster_count += len(cluster_centers)
 
-        fig.suptitle(f'Clusters {cluster_count}')
+        fig.suptitle(f'Clusters ({cluster_count})')
         plt.show()
 
 
@@ -244,7 +258,7 @@ class Mapper:
             ax[self.n_intervals-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
             cluster_count += len(cluster_centers)
 
-        fig.suptitle(f'Clusters {cluster_count}')
+        fig.suptitle(f'Clusters ({cluster_count})')
         plt.show()
 
 
@@ -253,7 +267,12 @@ class Mapper:
         ax = fig.add_subplot(111, projection='3d')
 
         # Plot vertices.
-        ax.scatter(*zip(*self.node_vertices))
+        ax.scatter(
+            *zip(*self.node_vertices),
+            s=50,
+            c=self._node_numbers,
+            norm=self._norm
+        )
         ax.set_box_aspect(self._plot_box_aspect)
 
         # Plot edges.
@@ -273,9 +292,36 @@ class Mapper:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.node_vertices])}]')
+        fig.suptitle(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
+        if self._sc is not None:
+            plt.colorbar(self._sc)
         plt.show()
 
+
+    def plot_graph_in_plane(self, *, seed=None):
+
+        # Initialize NetworkX graph.
+        g = nx.Graph()
+        for i in range(len(self.node_vertices)):
+            g.add_node(i)
+        for a, a_neighors in self.nodes.items():
+            for b in a_neighors:
+                g.add_edge(a, b)
+
+        # Put graph in plane.
+        pos = nx.spring_layout(g, seed=seed)
+
+        nx.draw_networkx_nodes(
+            g, pos,
+            node_color=self._node_numbers,
+            vmin=self._norm.vmin,
+            vmax=self._norm.vmax
+        )
+        nx.draw_networkx_edges(g, pos)
+        if self._sc is not None:
+            plt.colorbar(self._sc)
+        plt.title(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
+        plt.plot()
 
     def plot_graph(self):
         fig, ax = plt.subplots()

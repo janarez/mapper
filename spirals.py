@@ -2,15 +2,15 @@ import numpy as np
 from mapper_src.mapper import Mapper
 
 
-with open('hand.txt') as f:
-    data = f.readlines()
-
-points = np.array([list(map(float, p.strip().split(' '))) for p in data])
+points = np.load('spirals.npy')
 
 
 mapper = Mapper(
+    bins=7,
+    overlap=0.04,
     clustering_function='tomato',
-    distance=200
+    distance=200,
+    coordinate=0
 )
 
 graph = mapper.fit(points)

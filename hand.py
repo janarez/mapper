@@ -9,8 +9,8 @@ points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 
 
 mapper = Mapper(
-    clustering_function='agglomerative',
-    linkage="average"
+    clustering_function='tomato',
+    distance=200
 )
 
 graph = mapper.fit(points)

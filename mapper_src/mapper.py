@@ -293,7 +293,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_graph_in_plane(self):
+    def plot_graph_in_plane(self, *, seed=None):
 
         # Initialize NetworkX graph.
         g = nx.Graph()
@@ -302,7 +302,7 @@ class Mapper:
                 g.add_edge(a, b)
 
         # Put graph in plane.
-        pos = nx.spring_layout(g)
+        pos = nx.spring_layout(g, seed=seed)
 
         nx.draw_networkx_nodes(
             g, pos,

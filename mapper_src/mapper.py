@@ -31,8 +31,6 @@ class Mapper:
         self.intervals = self.cover(self.numbers)
         self.n_intervals = len(self.intervals)
 
-        self._initialise_plotting()
-
         # Sort intervals and numbers so that we assign them in order into partitions.
         self.numbers, self.vertices = zip(*sorted(zip(self.numbers, self.vertices), key=lambda t: t[0]))
         self.intervals.sort(key=lambda t: (t[0], t[1]))
@@ -66,6 +64,8 @@ class Mapper:
             prev_node_index = node_index - len(interval_clusters)
 
         self._compute_persistent_homology()
+
+        self._initialise_plotting()
 
         return self.nodes
 
@@ -101,6 +101,8 @@ class Mapper:
         ]
 
         self._norm = plt.Normalize(min(self.numbers), max(self.numbers))
+
+        self._node_numbers = self.filter(np.array(self.node_vertices))
 
     def _limit_axis(self, ax):
         if self._coordinate != 0:
@@ -266,7 +268,7 @@ class Mapper:
         ax.scatter(
             *zip(*self.node_vertices),
             s=50,
-            c=list(map(self.filter, self.node_vertices)),
+            c=self._node_numbers,
             norm=self._norm
         )
         ax.set_box_aspect(self._plot_box_aspect)
@@ -308,7 +310,7 @@ class Mapper:
 
         nx.draw_networkx_nodes(
             g, pos,
-            node_color=list(map(self.filter, self.node_vertices)),
+            node_color=self._node_numbers,
             vmin=self._norm.vmin,
             vmax=self._norm.vmax
         )

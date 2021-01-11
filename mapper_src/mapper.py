@@ -100,6 +100,8 @@ class Mapper:
             (np.min(np.array(self.vertices)[:, 2]), np.max(np.array(self.vertices)[:, 2]))
         ]
 
+        self._norm = plt.Normalize(min(self.numbers), max(self.numbers))
+
     def _limit_axis(self, ax):
         if self._coordinate != 0:
             ax.set_xlim3d(*self._plot_lim[0])
@@ -131,7 +133,13 @@ class Mapper:
     def plot_vertices_3d(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        sc = ax.scatter(np.array(self.vertices)[:, 0], np.array(self.vertices)[:, 1], np.array(self.vertices)[:, 2], c=self.numbers)
+        sc = ax.scatter(
+            np.array(self.vertices)[:, 0],
+            np.array(self.vertices)[:, 1],
+            np.array(self.vertices)[:, 2],
+            c=self.numbers,
+            norm=self._norm
+        )
         ax.set_box_aspect(self._plot_box_aspect)
 
         ax.set_xlabel('X')
@@ -154,7 +162,6 @@ class Mapper:
 
     def plot_intervals_3d(self):
         fig = plt.figure(figsize=plt.figaspect(self.n_intervals))
-        n = plt.Normalize(min(self.numbers), max(self.numbers))
 
         for i, indices in self.partitions.items():
             ax = fig.add_subplot(self.n_intervals, 1, self.n_intervals-i, projection='3d')
@@ -167,7 +174,7 @@ class Mapper:
                 np.array(interval_vertices)[:, 1],
                 np.array(interval_vertices)[:, 2],
                 c=interval_numbers,
-                norm=n
+                norm=self._norm
             )
 
             self._limit_axis(ax)
@@ -256,7 +263,12 @@ class Mapper:
         ax = fig.add_subplot(111, projection='3d')
 
         # Plot vertices.
-        ax.scatter(*zip(*self.node_vertices))
+        ax.scatter(
+            *zip(*self.node_vertices),
+            s=50,
+            c=list(map(self.filter, self.node_vertices)),
+            norm=self._norm
+        )
         ax.set_box_aspect(self._plot_box_aspect)
 
         # Plot edges.
@@ -291,7 +303,12 @@ class Mapper:
         # Put graph in plane.
         pos = nx.spring_layout(g)
 
-        nx.draw_networkx_nodes(g, pos)
+        nx.draw_networkx_nodes(
+            g, pos,
+            node_color=list(map(self.filter, self.node_vertices)),
+            vmin=self._norm.vmin,
+            vmax=self._norm.vmax
+        )
         nx.draw_networkx_edges(g, pos)
         plt.plot()
 

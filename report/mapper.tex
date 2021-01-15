@@ -12,6 +12,8 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{graphbox}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \graphicspath{{./figures/}}
 
@@ -147,6 +149,40 @@ All code is available online at \url{https://github.com/janarez/mapper}.
 The repository contains documentation including instructions for using the library and running examples.
 
 \section{Results}\label{sec:res}
+
+We run our Mapper algorithm on a point cloud of human hand consisting of almost 13 thousand vertices (Figure~\ref{fig:hand-points}).
+We use y coordinate filter function, five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
+The hand is clearly visible in the resulting graph and its five fingers are well separated with the thumb starting earlier than the other four fingers (Figures~\ref{fig:hand-space} and~\ref{fig:hand-plane}).
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-point-cloud}
+        \caption{Point cloud}
+        \label{fig:hand-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-graph-3d}
+        \caption{Graph in space}
+        \label{fig:hand-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:hand-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-clusters}
+        \caption{Clustering}
+        \label{fig:hand-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of hand.}
+    \label{fig:hand}
+\end{figure}
 
 \section{Conclusion}\label{sec:concl}
 

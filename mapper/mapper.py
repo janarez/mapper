@@ -46,15 +46,16 @@ class Mapper:
     Methods
     --------
     fit(X) : Fits the mapper from array of 3D points.
+    Must be called before any plotting function.
 
     plot_vertices : Plots the initial input points colored by filter value.
     plot_intervals : Plots the partitioned input points.
     plot_clusters : Plots the clusters within each partition.
     plot_graph : Plots the mapper graph inside original 3D space.
     plot_graph_in_plane :  Plots the mapper graph embedded into plane.
-    plot_persistence_homology(type="filter") : Plots the persistence homology of mapper simplex
+    plot_persistence_homology(simplex_type="filter") : Plots the persistence homology of mapper simplex
     constructed either from the filter function map or as a Rips complex from cluster centres
-    positions. Use type : {"filter", "Rips"}.
+    positions. Use `simplex_type` : {"filter", "Rips"}.
 
     Examples
     --------
@@ -119,8 +120,6 @@ class Mapper:
             prev_node_index = node_index - len(interval_clusters)
 
         self._initialise_plotting()
-        self._compute_persistent_homology()
-
         return self.nodes
 
     def _assign_partitions(self):
@@ -169,33 +168,36 @@ class Mapper:
             ax.set_zlim3d(*self._plot_lim[2])
 
 
-    def _compute_persistent_homology(self):
+    def _compute_persistent_homology(self, simplex_type):
         "Computes persistence homology of the graph."
 
-        # # Compute Rips filtration on vertices.
-        # self._rips = gudhi.RipsComplex(
-        #     points=self.node_vertices,
-        #     max_edge_length=40
-        # )
-        # self._st = self._rips.create_simplex_tree(
-        #     max_dimension=2
-        # )
+        # Compute Rips filtration on vertices.
+        if simplex_type == 'Rips':
+            self._rips = gudhi.RipsComplex(
+                points=self.node_vertices,
+                max_edge_length=40
+            )
+            self._st = self._rips.create_simplex_tree(
+                max_dimension=2
+            )
+        elif simplex_type == 'filter':
+            self._st = gudhi.SimplexTree()
 
-        self._st = gudhi.SimplexTree()
+            # Add artificial triangle.
+            n = len(self.nodes)
+            self._st.insert([0, n, n+1], filtration=self._node_numbers[0])
 
-        # Add artificial triangle.
-        n = len(self.nodes)
-        self._st.insert([0, n, n+1], filtration=self._node_numbers[0])
+            # Add vertices.
+            for i, n in enumerate(self._node_numbers):
+                self._st.insert([i], filtration=n)
 
-        # Add vertices.
-        for i, n in enumerate(self._node_numbers):
-            self._st.insert([i], filtration=n)
-
-        # Add edges.
-        for a, neighbors in self.nodes.items():
-            for b in neighbors:
-                f = max(self._node_numbers[a], self._node_numbers[b])
-                self._st.insert([a, b], filtration=f)
+            # Add edges.
+            for a, neighbors in self.nodes.items():
+                for b in neighbors:
+                    f = max(self._node_numbers[a], self._node_numbers[b])
+                    self._st.insert([a, b], filtration=f)
+        else:
+            raise ValueError(f'Unknown argument must be one of: "Rips", "filter".')
 
         # Compute persistence diagram.
         self.diag = self._st.persistence(
@@ -344,7 +346,9 @@ class Mapper:
         plt.plot()
 
 
-    def plot_persistence_homology(self, type='filter'):
+    def plot_persistence_homology(self, simplex_type='filter'):
+        self._compute_persistent_homology(simplex_type)
+
         gudhi.plot_persistence_barcode(self.diag, legend=True)
         plt.show()
 

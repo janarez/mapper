@@ -152,7 +152,7 @@ The repository contains documentation including instructions for using the libra
 
 \section{Results}\label{sec:res}
 
-We run our Mapper algorithm on a point cloud of human hand consisting of almost 13 thousand vertices (Figure~\ref{fig:hand}).
+We run our Mapper algorithm on a point cloud of human hand consisting of almost thirteen thousand vertices (Figure~\ref{fig:hand}).
 We use $y$ coordinate filter function (Figure~\ref{fig:hand-points}), five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
 The hand is clearly visible in the resulting graph and its five fingers are well separated with the thumb starting earlier than the other four fingers (Figures~\ref{fig:hand-space} and~\ref{fig:hand-plane}).
 
@@ -218,6 +218,41 @@ The two spirals are well separated (Figure~\ref{fig:spirals-plane}) and clearly 
     \end{subfigure}
     \caption{Results of running our Mapper algorithm on a point cloud of two spirals with noise.}
     \label{fig:spirals}
+\end{figure}
+
+We finally run our Mapper algorithm on complex point cloud of an ant consisting of thirteen thousand vertices (Figure~\ref{fig:ant}).
+As filter function, we use distance from point $(60, 80, 60)$ lying inside the ant's body (Figure~\ref{fig:ant-points}).
+For cover, we use five bins with 5~\% overlap and ToMATo clustering (Figure~\ref{fig:ant-cluster}).
+In the resulting graph, we can see the ant (Figure~\ref{fig:ant-space}), its six legs, tail and two antennae (Figure~\ref{fig:ant-plane}).
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-point-cloud}
+        \caption{Point cloud}
+        \label{fig:ant-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-graph-3d}
+        \caption{Graph in space}
+        \label{fig:ant-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:ant-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-clusters}
+        \caption{Clustering}
+        \label{fig:ant-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of an ant.}
+    \label{fig:ant}
 \end{figure}
 
 \section{Conclusion}\label{sec:concl}

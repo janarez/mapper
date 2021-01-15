@@ -47,6 +47,8 @@ class Mapper:
     --------
     fit(X) : Fits the mapper from array of 3D points.
     Must be called before any plotting function.
+    fit_predict(X) : Like `fit`, but returns the mapper graph
+    as dictionary of adjacent vertices.
 
     plot_vertices : Plots the initial input points colored by filter value.
     plot_intervals : Plots the partitioned input points.
@@ -122,6 +124,15 @@ class Mapper:
         self._initialise_plotting()
         return self.nodes
 
+
+    def fit_predict(self, vertices):
+        """
+        Like `fit`, but returns the mapper graph as dictionary of adjacent vertices.
+        """
+        self.fit(vertices)
+        return self.nodes
+
+
     def _assign_partitions(self):
         "Distributes vertices to cover partitions given by intervals."
         self.partitions = defaultdict(set)
@@ -139,6 +150,7 @@ class Mapper:
                     break   # Too large.
                 elif b < n:
                     unused += 1 # Too low.
+
 
     def _initialise_plotting(self):
         self._plot_box_aspect = (
@@ -158,6 +170,7 @@ class Mapper:
         self._node_numbers = self.filter(np.array(self.node_vertices))
 
         self._sc = None
+
 
     def _limit_axis(self, ax):
         if self._coordinate != 0:

@@ -12,6 +12,61 @@ from .cover import Cover
 
 
 class Mapper:
+    """Mapper algorithm.
+
+    Parameters
+    ----------
+    filter_function : {"by_coordinate", "distance_from_point"},
+        default="by_coordinate" Filtering function to use.
+
+    clustering_function : {"tomato", "agglomerative"}, default="tomato"
+        Clustering function to use.
+
+    bins : int, default=5 The number of bins of cover of the `filter_function`
+        range.
+
+    overlap : float, default=0.25 Bins overlap within cover.
+
+    coordinate : int, default=-1 Coordinate to filter by if `filter_function` is
+        "by_coordinate".
+
+    point : array-like of shape (3,), default=[0,0,0] Point to filter by if
+        `filter_function` is "distance_from_point".
+
+    linkage : {"ward", "complete", "average", "single"}, default="ward" Which
+        linkage criterion to use for `clustering_function` "agglomerative".
+
+    distance : float, default=None The distance function as interpreted by
+        selected `clustering_function`:
+
+        - "tomato" the `merge_threshold` parameter. If `distance` equals None, then it
+        is automatically set to `sys.maxsize` for optimal results.
+        - "agglomerative" the `distance_threshold` parameter.
+
+    Methods
+    --------
+    fit(X) : Fits the mapper from array of 3D points.
+
+    plot_vertices : Plots the initial input points colored by filter value.
+    plot_intervals : Plots the partitioned input points.
+    plot_clusters : Plots the clusters within each partition.
+    plot_graph : Plots the mapper graph inside original 3D space.
+    plot_graph_in_plane :  Plots the mapper graph embedded into plane.
+    plot_persistence_homology(type="filter") : Plots the persistence homology of mapper simplex
+    constructed either from the filter function map or as a Rips complex from cluster centres
+    positions. Use type : {"filter", "Rips"}.
+
+    Examples
+    --------
+    >>> from mapper import Mapper
+    >>> import numpy as np
+    >>> n = 100
+    >>> d = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    >>> points = np.vstack((np.cos(d), np.sin(d), np.zeros(n))).T
+    >>> mapper = Mapper(coordinate=1)
+    >>> mapper.fit(points)
+    >>> mapper.plot_graph_in_plane()
+    """
     def __init__(self, **kwargs):
         self.filter = Filter(**kwargs)
         self.cover = Cover(**kwargs)
@@ -360,7 +415,7 @@ class Mapper:
         fig.suptitle(f'Mapper graph')
         plt.show()
 
-    def plot_persistence_homology(self):
+    def plot_persistence_homology(self, type='filter'):
         gudhi.plot_persistence_barcode(self.diag, legend=True)
         plt.show()
 

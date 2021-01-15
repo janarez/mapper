@@ -24,11 +24,18 @@ def noisy_circle(points=100, noise=0.1):
 points = noisy_circle()
 print(points.shape)
 
-mapper = Mapper(distance=1.5, bins=3, linkage="average", coordinate=1)
+mapper = Mapper(
+    coordinate=1,
+    bins=3,
+    clustering_function="agglomerative",
+    linkage="average",
+    distance=1.5,
+)
 
 graph = mapper.fit(points)
 mapper.plot_vertices_3d()
 mapper.plot_intervals_3d()
 mapper.plot_clusters_3d()
 mapper.plot_graph_3d()
+mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()

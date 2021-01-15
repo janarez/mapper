@@ -204,7 +204,7 @@ class Mapper:
         )
 
 
-    def plot_vertices_3d(self):
+    def plot_vertices(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         self._sc = ax.scatter(
@@ -224,17 +224,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_vertices(self):
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        sc = ax.scatter(np.array(self.vertices)[:, 0], np.array(self.vertices)[:, 1], c=self.numbers)
-        ax.set_aspect('equal')
-        fig.suptitle(f'Vertices ({len(self.vertices)})')
-        plt.colorbar(sc)
-        plt.show()
-
-
-    def plot_intervals_3d(self):
+    def plot_intervals(self):
         fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
 
         for i, indices in self.partitions.items():
@@ -261,25 +251,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_intervals(self):
-        fig = plt.figure()
-        ax = fig.subplots(self.n_intervals, sharex=True)
-        n = plt.Normalize(min(self.numbers), max(self.numbers))
-        for i, indices in self.partitions.items():
-            convert_indices = operator.itemgetter(*indices)
-            interval_vertices = convert_indices(self.vertices)
-            interval_numbers = convert_indices(self.numbers)
-
-            ax[self.n_intervals-i-1].scatter(
-                np.array(interval_vertices)[:, 0],
-                np.array(interval_vertices)[:, 1],
-                c=interval_numbers,
-                norm=n
-            )
-        fig.suptitle(f'Intervals ({self.n_intervals})')
-        plt.show()
-
-    def plot_clusters_3d(self):
+    def plot_clusters(self):
         fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
         cluster_count = 0
 
@@ -310,29 +282,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_clusters(self):
-        fig = plt.figure()
-        ax = fig.subplots(self.n_intervals, sharex=True)
-        cluster_count = 0
-
-        for i, indices in self.partitions.items():
-            convert_indices = operator.itemgetter(*indices)
-            interval_vertices = convert_indices(self.vertices)
-            labels, _, cluster_centers = self.clustering(interval_vertices, indices)
-
-            ax[self.n_intervals-i-1].scatter(
-                np.array(interval_vertices)[:, 0],
-                np.array(interval_vertices)[:, 1],
-                c=labels
-            )
-            ax[self.n_intervals-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
-            cluster_count += len(cluster_centers)
-
-        fig.suptitle(f'Clusters ({cluster_count})')
-        plt.show()
-
-
-    def plot_graph_3d(self):
+    def plot_graph(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
@@ -393,27 +343,6 @@ class Mapper:
         plt.title(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.plot()
 
-    def plot_graph(self):
-        fig, ax = plt.subplots()
-        plt.xlim([np.min(np.array(self.vertices)[:,0]), np.max(np.array(self.vertices)[:,0])])
-        plt.ylim([np.min(np.array(self.vertices)[:,1]), np.max(np.array(self.vertices)[:,1])])
-
-        # Vertices.
-        plt.plot(*zip(*self.node_vertices), 'ko', markersize=10)
-        for a, a_neighors in self.nodes.items():
-            for b in a_neighors:
-                vertex_a = self.node_vertices[a]
-                vertex_b = self.node_vertices[b]
-                plt.plot(
-                    [vertex_a[0], vertex_b[0]],
-                    [vertex_a[1], vertex_b[1]],
-                    color='b',
-                    linewidth=2,
-                    zorder=0
-                )
-
-        fig.suptitle(f'Mapper graph')
-        plt.show()
 
     def plot_persistence_homology(self, type='filter'):
         gudhi.plot_persistence_barcode(self.diag, legend=True)

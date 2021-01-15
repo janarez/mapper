@@ -42,12 +42,15 @@ Commonly used filter functions are
     \item specific coordinate, e.g., y coordinate $f((x, y, z)) = y$,
     \item distance from point $\mathbf{p}$, i.e., $f(\mathbf{x}) = \lVert \mathbf{x} - \mathbf{p} \rVert_2$, where origin is usually used as $\mathbf{p}$.
 \end{itemize}
-In our example, we use y coordinate as filter function (Figure~\ref{fig:torus-filter}).
+Applying filter function to our torus example is demonstrated in Figure~\ref{fig:torus-filter}.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\columnwidth]{torus-y-coor}
-    \caption{Y coordinate filter function applied to our torus example.}
+    \includegraphics[width=0.4\columnwidth]{torus-y-coor}
+    \includegraphics[width=0.4\columnwidth]{torus-distance-from-origin}
+    \caption{Different filter functions applied to our torus example.
+        On the left, y coordinate; on the right, distance from origin.
+        Value of the filter function is illustrated using color range.}
     \label{fig:torus-filter}
 \end{figure}
 

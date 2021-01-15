@@ -1,5 +1,5 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+from mapper.mapper import Mapper
 
 def torus():
     u=np.linspace(0,2*np.pi,10)

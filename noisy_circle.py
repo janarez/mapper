@@ -1,5 +1,7 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+
+import sys
+from mapper import Mapper
 
 
 def noisy_circle(points=100, noise=0.1):
@@ -11,21 +13,22 @@ def noisy_circle(points=100, noise=0.1):
     d = np.linspace(0, 2 * np.pi, points, endpoint=False)
     x = np.cos(d)
     y = np.sin(d)
+    z = np.zeros(points)
 
     # Add Gaussian noise.
     x = np.random.normal(x, noise)
     y = np.random.normal(y, noise)
 
-    return np.vstack((x, y)).T
+    return np.vstack((x, y, z)).T
 
 points = noisy_circle()
+print(points.shape)
 
-
-mapper = Mapper(distance=2, linkage="average")
+mapper = Mapper(distance=1.5, bins=3, linkage="average", coordinate=1)
 
 graph = mapper.fit(points)
-mapper.plot_vertices()
-mapper.plot_intervals()
-mapper.plot_clusters()
-mapper.plot_graph()
+mapper.plot_vertices_3d()
+mapper.plot_intervals_3d()
+mapper.plot_clusters_3d()
+mapper.plot_graph_3d()
 mapper.plot_persistence_homology()

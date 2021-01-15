@@ -1,8 +1,8 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+from mapper import Mapper
 
 
-points = np.load('spirals.npy')
+points = np.load('point_clouds/spirals.npy')
 
 
 mapper = Mapper(

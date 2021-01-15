@@ -6,9 +6,9 @@ import operator
 import gudhi
 import networkx as nx
 
-from mapper_src.filter import Filter
-from mapper_src.clustering import Clustering
-from mapper_src.cover import Cover
+from .filter import Filter
+from .clustering import Clustering
+from .cover import Cover
 
 
 class Mapper:

@@ -1,8 +1,8 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+from mapper import Mapper
 
 
-points = np.load('lion.npy')
+points = np.load('point_clouds/lion.npy')
 
 
 mapper = Mapper(

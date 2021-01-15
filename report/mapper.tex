@@ -92,7 +92,7 @@ Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
 
 Output of the Mapper algorithm is graph $G$ whose vertices are clusters from all $f^{-1}(U_\alpha)$ and
 $$
-    (e, f) \in E_G \Leftrightarrow e \cap f \neq \emptyset \mbox{,}
+    (u, v) \in E_G \Leftrightarrow u \cap v \neq \emptyset \mbox{,}
 $$
 i.e., there is an edge between clusters if there is nonempty intersection between them (which happens thanks to overlaps in $\mathcal{U}$).
 Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:torus-mapper}.
@@ -106,6 +106,27 @@ Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:toru
         In space, nodes are positioned at their corresponding cluster centers.
         We also color nodes by their corresponding filter values.}
     \label{fig:torus-mapper}
+\end{figure}
+
+Finally, we treat the resulting Mapper graph as simplicial complex and compute its persistent homology.
+We need filtration to compute persistent homology and we have two obvious approaches for computing filtration from the Mapper graph:
+\begin{enumerate}
+    \item Perform Rips filtration on the graph in space.
+    \item Start with empty filtration.
+          Add vertices to the filtration incrementally for increasing filter values.
+          Formally, add vertex $v$ to filtration at $f(v)$.
+          Add edge as soon as both of its vertices are added, i.e., add edge $(u, v)$ at $\max\,\{ f(u), f(v) \}$.
+\end{enumerate}
+Persistence diagrams of both approaches applied to our torus example are shown in Figure~\ref{fig:torus-persistence}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.4\columnwidth]{torus-rips-barcode}
+    \includegraphics[width=0.4\columnwidth]{torus-rips-persistence-diagram}
+    \includegraphics[width=0.4\columnwidth]{torus-barcode}
+    \includegraphics[width=0.4\columnwidth]{torus-persistence-diagram}
+    \caption{Persistence barcodes and diagrams of our torus example computed using Rips filtration (in the top row) and filter-function-based filtration (in the bottom row).}
+    \label{fig:torus-persistence}
 \end{figure}
 
 \section{Implementation}\label{sec:impl}

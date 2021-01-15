@@ -18,13 +18,18 @@ class Clustering:
                 compute_full_tree=True,
                 linkage=kwargs.get('linkage', 'ward'),
             )
+            # Note that this is general on purpose, so that more
+            # scikit API clustering can be added.
             self._distance_param = 'distance_threshold'
 
         elif clustering_function == 'tomato':
-            self._show_diagram = kwargs.get('cluster_plot', False)
+            # Use maximum distance as default.
+            self._distance = kwargs.get('distance', sys.maxsize)
+            return
         else:
             raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "tomato".')
 
+        # Scikit-learn algorithms settings.
         # If not None clustering is only run for this single value.
         self._distance = kwargs.get('distance', None)
         # Else clusters up to `max_k` are tested.
@@ -42,11 +47,6 @@ class Clustering:
         # We must recreate the object as it saves fitting information from past fits.
         self._clustering = Tomato(merge_threshold=self._distance)
         self._clustering.fit(vertices)
-
-        if self._show_diagram:
-            self._clustering.plot_diagram()
-            n_clusters = int(input('Set optimal number of clusters: '))
-            self._clustering.n_clusters_ = n_clusters
 
         return self._assign_vertices_to_clusters(vertices, indices)
 

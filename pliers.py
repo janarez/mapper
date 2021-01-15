@@ -18,8 +18,8 @@ mapper = Mapper(
 )
 
 graph = mapper.fit(points)
-mapper.plot_vertices_3d()
-mapper.plot_intervals_3d()
-mapper.plot_clusters_3d()
-mapper.plot_graph_3d()
+mapper.plot_vertices()
+mapper.plot_intervals()
+mapper.plot_clusters()
+mapper.plot_graph()
 mapper.plot_persistence_homology()

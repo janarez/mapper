@@ -43,6 +43,10 @@ class Mapper:
         is automatically set to `sys.maxsize` for optimal results.
         - "agglomerative" the `distance_threshold` parameter.
 
+    max_k : int, default=10 If `distance` is not set for scikit-learn clustering algorithms
+        (not "tomato"), optimal clustering is determined based on silhouette score
+        and up to `max_k` clusters are tried.
+
     Methods
     --------
     fit(X) : Fits the mapper from array of 3D points.

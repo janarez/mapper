@@ -54,8 +54,10 @@ class Clustering:
     def _scikit_clustering(self, vertices, indices):
         self._clustering.set_params(**{self._distance_param : self._distance})
 
+        # Find optimal number of clusters by silhouette score.
         if self._distance is None:
-            # Find optimal number of clusters by silhouette score.
+            # Base for keeping single cluster.
+            # (experimentally determined by trial and error on several examples, not a strict number)
             opt_sh = 0.6
 
             opt_k = 1

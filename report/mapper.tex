@@ -49,7 +49,7 @@ The algorithm first applies filter function $f: X \to I$ where $I \subseteq \mat
 Filter function can be arbitrary and its choice usually depends on the input data.
 Commonly used filter functions are
 \begin{itemize}
-    \item specific coordinate, e.g., y coordinate $f((x, y, z)) = y$,
+    \item specific coordinate, e.g., $y$ coordinate $f((x, y, z)) = y$,
     \item distance from point $\mathbf{p}$, i.e., $f(\mathbf{x}) = \lVert \mathbf{x} - \mathbf{p} \rVert_2$, where origin is usually used as $\mathbf{p}$.
 \end{itemize}
 Applying filter function to our torus example is demonstrated in Figure~\ref{fig:torus-filter}.
@@ -59,7 +59,7 @@ Applying filter function to our torus example is demonstrated in Figure~\ref{fig
     \includegraphics[width=0.4\columnwidth]{torus-y-coor}
     \includegraphics[width=0.4\columnwidth]{torus-distance-from-origin}
     \caption{Different filter functions applied to our torus example.
-        Y coordinate is used on the left and distance from origin is used on the right.
+        Coordinate $y$ is used on the left and distance from origin is used on the right.
         Value of the filter function is illustrated using color range.}
     \label{fig:torus-filter}
 \end{figure}
@@ -150,8 +150,8 @@ The repository contains documentation including instructions for using the libra
 
 \section{Results}\label{sec:res}
 
-We run our Mapper algorithm on a point cloud of human hand consisting of almost 13 thousand vertices (Figure~\ref{fig:hand-points}).
-We use y coordinate filter function, five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
+We run our Mapper algorithm on a point cloud of human hand consisting of almost 13 thousand vertices (Figure~\ref{fig:hand}).
+We use $y$ coordinate filter function (Figure~\ref{fig:hand-points}), five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
 The hand is clearly visible in the resulting graph and its five fingers are well separated with the thumb starting earlier than the other four fingers (Figures~\ref{fig:hand-space} and~\ref{fig:hand-plane}).
 
 \begin{figure}[ht]
@@ -182,6 +182,40 @@ The hand is clearly visible in the resulting graph and its five fingers are well
     \end{subfigure}
     \caption{Results of running our Mapper algorithm on a point cloud of hand.}
     \label{fig:hand}
+\end{figure}
+
+We also run our Mapper algorithm on two spirals with noise (Figure~\ref{fig:spirals}).
+We use $x$ coordinate filter function (Figure~\ref{fig:spirals-points}), seven bins with 4~\% overlap and ToMATo clustering (Figure~\ref{fig:spirals-cluster}).
+The two spirals are well separated (Figure~\ref{fig:spirals-plane}) and clearly visible in the resulting graph (Figure~\ref{fig:spirals-space}).
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-point-cloud}
+        \caption{Point cloud}
+        \label{fig:spirals-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-graph-3d}
+        \caption{Graph in space}
+        \label{fig:spirals-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:spirals-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-clusters}
+        \caption{Clustering}
+        \label{fig:spirals-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of two spirals with noise.}
+    \label{fig:spirals}
 \end{figure}
 
 \section{Conclusion}\label{sec:concl}

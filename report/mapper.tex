@@ -23,7 +23,12 @@ In the field of topological data analysis, Mapper~\cite{mapper} is one popular m
 
 In this report we provide a simple yet fast implementation of Mapper in Python that works on 3D points.
 
-\section{Algorithm}
+We describe the Mapper algorithm in Section~\ref{sec:alg}.
+We provide details of our implementation in Section~\ref{sec:impl}.
+We report results of running our implementation on several examples in Section~\ref{sec:res}.
+Finally, we conclude this report in Section~\ref{sec:concl}.
+
+\section{Algorithm}\label{sec:alg}
 
 Input to the Mapper algorithm is finite point cloud $X \subset \mathbb{R}^3$.
 We demonstrate how the algorithm works on an example of torus whose points are shown in Figure~\ref{fig:torus-points}.
@@ -81,6 +86,12 @@ Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
         Each cluster's center is represented by bigger red dot.}
     \label{fig:torus-cluster}
 \end{figure}
+
+\section{Implementation}\label{sec:impl}
+
+\section{Results}\label{sec:res}
+
+\section{Conclusion}\label{sec:concl}
 
 \bibliographystyle{IEEEtran}
 \bibliography{bibliography}

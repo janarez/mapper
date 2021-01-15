@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{graphbox}
 
 \graphicspath{{./figures/}}
 
@@ -54,7 +55,7 @@ Applying filter function to our torus example is demonstrated in Figure~\ref{fig
     \includegraphics[width=0.4\columnwidth]{torus-y-coor}
     \includegraphics[width=0.4\columnwidth]{torus-distance-from-origin}
     \caption{Different filter functions applied to our torus example.
-        On the left, y coordinate; on the right, distance from origin.
+        Y coordinate is used on the left and distance from origin is used on the right.
         Value of the filter function is illustrated using color range.}
     \label{fig:torus-filter}
 \end{figure}
@@ -70,11 +71,13 @@ Splitting interval using covering of our torus example is demonstrated in Figure
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-25}
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-05}
     \caption{Different coverings applied to our torus example.
-        We use 4 bins with 25~\% overlap in the top row and 5~\% overlap in the bottom row.}
+        We use 4 bins with 25~\% overlap in the top row and 5~\% overlap in the bottom row.
+        We also color vertices by their original filter values.}
     \label{fig:torus-cover}
 \end{figure}
 
 We then perform clustering in each interval obtained from covering.
+Formally, we cluster points $f^{-1}(U_\alpha)$ for each $\alpha \in A$.
 Clustering method can be again arbitrary chosen and its parameters must be tweaked in order to obtain good results in later stages of the algorithm.
 Commonly used clustering schemes include agglomerative clustering (where we can choose for example single or average linkage), K-Means clustering and ToMATo~\cite{tomato}.
 Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
@@ -85,6 +88,24 @@ Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
     \caption{Agglomerative clustering with average linkage applied to our torus example.
         Each cluster's center is represented by bigger red dot.}
     \label{fig:torus-cluster}
+\end{figure}
+
+Output of the Mapper algorithm is graph $G$ whose vertices are clusters from all $f^{-1}(U_\alpha)$ and
+$$
+    (e, f) \in E_G \Leftrightarrow e \cap f \neq \emptyset \mbox{,}
+$$
+i.e., there is an edge between clusters if there is nonempty intersection between them (which happens thanks to overlaps in $\mathcal{U}$).
+Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:torus-mapper}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-3d}
+    \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-2d}
+    \caption{Mapper graph of our torus example.
+        The same graph is depicted in space on the left and in plane on the right.
+        In space, nodes are positioned at their corresponding cluster centers.
+        We also color nodes by their corresponding filter values.}
+    \label{fig:torus-mapper}
 \end{figure}
 
 \section{Implementation}\label{sec:impl}

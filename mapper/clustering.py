@@ -1,7 +1,7 @@
 import operator
 import sys
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering, DBSCAN
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 from gudhi.clustering.tomato import Tomato
 
@@ -10,7 +10,7 @@ class Clustering:
     Function clustering vertices to nodes.
     Returns list of node indices for each vertex.
     """
-    def __init__(self, clustering_function='agglomerative', **kwargs):
+    def __init__(self, clustering_function='tomato', **kwargs):
         self._clustering_function = clustering_function
         if clustering_function == 'agglomerative':
             self._clustering = AgglomerativeClustering(
@@ -20,14 +20,10 @@ class Clustering:
             )
             self._distance_param = 'distance_threshold'
 
-        elif clustering_function == 'DBSCAN':
-            self._clustering = DBSCAN()
-            self._distance_param = 'eps'
-
         elif clustering_function == 'tomato':
             self._show_diagram = kwargs.get('cluster_plot', False)
         else:
-            raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "DBSCAN", "tomato".')
+            raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "tomato".')
 
         # If not None clustering is only run for this single value.
         self._distance = kwargs.get('distance', None)

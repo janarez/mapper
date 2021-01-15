@@ -8,11 +8,50 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{hyperref}
+\usepackage{graphicx}
+
+\graphicspath{{./figures/}}
 
 \begin{document}
 
 \maketitle
 
+\section{Introduction}
+
+Visualization of high-dimensional data is hard.
+In the field of topological data analysis, Mapper~\cite{mapper} is one popular method used for data visualization.
+
+In this report we provide a simple yet fast implementation of Mapper in Python that works on 3D points.
+
+\section{Algorithm}
+
+Input to the Mapper algorithm is finite point cloud $X \subset \mathbb{R}^3$.
+We demonstrate how the algorithm works on an example of torus whose points are shown in Figure~\ref{fig:torus-points}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{torus-point-cloud}
+    \caption{Point cloud of torus example.}
+    \label{fig:torus-points}
+\end{figure}
+
+The algorithm first applies filter function $f: X \to I$ where $I \subseteq \mathbb{R}$, mapping each point to real space.
+Filter function can be arbitrary and its choice usually depends on the input data.
+Commonly used filter functions are
+\begin{itemize}
+    \item specific coordinate, e.g., y coordinate $f((x, y, z)) = y$,
+    \item distance from point $\mathbf{p}$, i.e., $f(\mathbf{x}) = \lVert \mathbf{x} - \mathbf{p} \rVert_2$, where origin is usually used as $\mathbf{p}$.
+\end{itemize}
+In our example, we use y coordinate as filter function (Figure~\ref{fig:torus-filter}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{torus-y-coor}
+    \caption{Y coordinate filter function applied to our torus example.}
+    \label{fig:torus-filter}
+\end{figure}
+
+\bibliographystyle{IEEEtran}
 \bibliography{bibliography}
 
 \end{document}

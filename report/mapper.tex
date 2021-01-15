@@ -54,18 +54,32 @@ Applying filter function to our torus example is demonstrated in Figure~\ref{fig
     \label{fig:torus-filter}
 \end{figure}
 
-We continue by splitting the interval into overlapping bins.
+We continue by splitting interval $I$ into overlapping bins.
 Formally, we take $\mathcal{U} = \{ U_\alpha \}_{\alpha \in A}$ finite covering of $I$.
 Usually, uniform covering is used.
 Then, it is enough to specify number of bins and ratio of overlap.
+Splitting interval using covering of our torus example is demonstrated in Figure~\ref{fig:torus-cover}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-25}
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-05}
-    \caption{Different coverings used in our torus example.
+    \caption{Different coverings applied to our torus example.
         We use 4 bins with 25~\% overlap in the top row and 5~\% overlap in the bottom row.}
     \label{fig:torus-cover}
+\end{figure}
+
+We then perform clustering in each interval obtained from covering.
+Clustering method can be again arbitrary chosen and its parameters must be tweaked in order to obtain good results in later stages of the algorithm.
+Commonly used clustering schemes include agglomerative clustering (where we can choose for example single or average linkage), K-Means clustering and ToMATo~\cite{tomato}.
+Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{torus-clustering}
+    \caption{Agglomerative clustering with average linkage applied to our torus example.
+        Each cluster's center is represented by bigger red dot.}
+    \label{fig:torus-cluster}
 \end{figure}
 
 \bibliographystyle{IEEEtran}

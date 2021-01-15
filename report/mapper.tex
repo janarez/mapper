@@ -131,6 +131,19 @@ Persistence diagrams of both approaches applied to our torus example are shown i
 
 \section{Implementation}\label{sec:impl}
 
+We implement the Mapper algorithm as a Python library.
+It contains all steps of the algorithm described in Section~\ref{sec:alg} and also code necessary to plot the corresponding figures and diagrams.
+We also include Python scripts for running our implementation on examples presented in Section~\ref{sec:res} and a few more.
+
+We implement most of the algorithm ourselves, using NumPy~\cite{numpy} for computations and Matplotlib~\cite{matplotlib} and Networkx~\cite{networkx} for plotting.
+However, we use Gudhi~\cite{gudhi} implementation of ToMATo clustering and persistent homology computation and scikit-learn~\cite{scikit} implementation of other clustering schemes.
+
+Our implementation includes basic filter functions (chosen coordinate, distance from point), uniform cover (with number of bins and overlap parameters) and aforementioned clustering schemes (proxy for other libraries).
+Thanks to flexible modular architecture, more filter functions, cover methods and clustering schemes can be implemented and incorporated into our Mapper library easily.
+
+All code is available online at \url{https://github.com/janarez/mapper}.
+The repository contains documentation including instructions for using the library and running examples.
+
 \section{Results}\label{sec:res}
 
 \section{Conclusion}\label{sec:concl}

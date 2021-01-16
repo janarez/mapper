@@ -14,6 +14,7 @@
 \usepackage{graphbox}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float}
 
 \graphicspath{{./figures/}}
 
@@ -129,10 +130,10 @@ These diagrams report one component and one cycle which is in line with our expe
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.4\columnwidth]{torus-rips-barcode}
-    \includegraphics[width=0.4\columnwidth]{torus-rips-persistence-diagram}
-    \includegraphics[width=0.4\columnwidth]{torus-barcode}
-    \includegraphics[width=0.4\columnwidth]{torus-persistence-diagram}
+    \includegraphics[width=0.33\columnwidth]{torus-rips-barcode}
+    \includegraphics[width=0.33\columnwidth]{torus-rips-persistence-diagram}
+    \includegraphics[width=0.33\columnwidth]{torus-barcode}
+    \includegraphics[width=0.33\columnwidth]{torus-persistence-diagram}
     \caption{Persistence barcodes and diagrams of our torus example computed using Rips filtration (in the top row) and filter-function-based filtration (in the bottom row).}
     \label{fig:torus-persistence}
 \end{figure}
@@ -164,7 +165,7 @@ We run our Mapper algorithm on a point cloud of human hand consisting of almost 
 We use $y$ coordinate filter function (Figure~\ref{fig:hand-points}), five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
 The hand is clearly visible in the resulting graph and its five fingers are well separated with the thumb starting earlier than the other four fingers (Figures~\ref{fig:hand-space} and~\ref{fig:hand-plane}).
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \begin{subfigure}[c]{0.3\columnwidth}
         \centering
@@ -235,13 +236,7 @@ Again we prefer ToMATo clustering (Figure~\ref{fig:chair-cluster}). The four
 legs and the backrest are clearly visible (Figure~\ref{fig:chair-plane}). The
 3D embedded graph especially nicely resembles a chair (Figure~\ref{fig:chair-space}).
 
-In Figure~\ref{fig:chair-persistence} we show the persistence barcode from the
-filter-function-based filtration of the resulting simplicial complex from the
-chair example. We observe the four components at the start corresponding to four
-chair legs. They then merge into single component as we approach the chair seat.
-In the end a single cycle appears thanks to the backrest.
-
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \begin{subfigure}[c]{0.3\columnwidth}
         \centering
@@ -270,6 +265,12 @@ In the end a single cycle appears thanks to the backrest.
     \caption{Results of running our Mapper algorithm on a point cloud of chair.}
     \label{fig:chair}
 \end{figure}
+
+In Figure~\ref{fig:chair-persistence} we show the persistence barcode from the
+filter-function-based filtration of the resulting simplicial complex from the
+chair example. We observe the four components at the start corresponding to four
+chair legs. They then merge into single component as we approach the chair seat.
+In the end a single cycle appears thanks to the backrest.
 
 \begin{figure}[ht]
     \centering

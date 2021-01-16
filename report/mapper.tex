@@ -228,6 +228,56 @@ The two spirals are well separated (Figure~\ref{fig:spirals-plane}) and clearly 
     \label{fig:spirals}
 \end{figure}
 
+Next, we run our Mapper algorithm on a chair point cloud
+(Figure~\ref{fig:chair}). We use $y$ coordinate filter function
+(Figure~\ref{fig:chair-points}) and set number of bins to 8 with 5~\% overlap.
+Again we prefer ToMATo clustering (Figure~\ref{fig:chair-cluster}). The four
+legs and the backrest are clearly visible (Figure~\ref{fig:chair-plane}). The
+3D embedded graph especially nicely resembles a chair (Figure~\ref{fig:chair-space}).
+
+In Figure~\ref{fig:chair-persistence} we show the persistence barcode from the
+filter-function-based filtration of the resulting simplicial complex from the
+chair example. We observe the four components at the start corresponding to four
+chair legs. They then merge into single component as we approach the chair seat.
+In the end a single cycle appears thanks to the backrest.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-point-cloud}
+        \caption{Point cloud}
+        \label{fig:chair-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-graph-3d}
+        \caption{Graph in space}
+        \label{fig:chair-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:chair-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-clusters}
+        \caption{Clustering}
+        \label{fig:chair-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of chair.}
+    \label{fig:chair}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\columnwidth]{chair-barcode}
+    \caption{Persistence barcode of chair example using filter-function-based filtration.}
+    \label{fig:chair-persistence}
+\end{figure}
+
 We finally run our Mapper algorithm on complex point cloud of an ant consisting
 of thirteen thousand vertices (Figure~\ref{fig:ant}). As filter function, we use
 distance from point $(60, 80, 60)$ lying inside the ant's body

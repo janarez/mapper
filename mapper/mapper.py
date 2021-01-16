@@ -6,12 +6,86 @@ import operator
 import gudhi
 import networkx as nx
 
-from mapper_src.filter import Filter
-from mapper_src.clustering import Clustering
-from mapper_src.cover import Cover
+from .filter import Filter
+from .clustering import Clustering
+from .cover import Cover
 
 
 class Mapper:
+    """Mapper algorithm.
+
+    Parameters
+    ----------
+    filter_function : {"by_coordinate", "distance_from_point"},
+        default="by_coordinate" Filtering function to use.
+
+    clustering_function : {"tomato", "agglomerative"}, default="tomato"
+        Clustering function to use.
+
+    bins : int, default=5 The number of bins of cover of the `filter_function`
+        range.
+
+    overlap : float, default=0.25 Bins overlap within cover.
+
+    coordinate : int, default=-1 Coordinate to filter by if `filter_function` is
+        "by_coordinate".
+
+    point : array-like of shape (3,), default=[0,0,0] Point to filter by if
+        `filter_function` is "distance_from_point".
+
+    linkage : {"ward", "complete", "average", "single"}, default="ward" Which
+        linkage criterion to use for `clustering_function` "agglomerative".
+
+    distance : float, default=None The distance function as interpreted by
+        selected `clustering_function`:
+
+        - "tomato" the `merge_threshold` parameter. If `distance` equals None, then it
+        is automatically set to `sys.maxsize` for optimal results.
+        - "agglomerative" the `distance_threshold` parameter.
+
+    max_k : int, default=10 If `distance` is not set for scikit-learn clustering algorithms
+        (not "tomato"), optimal clustering is determined based on silhouette score
+        and up to `max_k` clusters are tried.
+
+    Methods
+    --------
+    fit(X) : Fits the mapper from array of 3D points.
+        Must be called before any plotting function.
+
+    fit_predict(X) : Like `fit`, but returns the mapper graph
+        as dictionary of adjacent vertices.
+
+    plot_vertices : Plots the initial input points colored by filter value.
+
+    plot_intervals : Plots the partitioned input points.
+
+    plot_clusters : Plots the clusters within each partition.
+
+    plot_graph : Plots the mapper graph inside original 3D space.
+
+    plot_graph_in_plane :  Plots the mapper graph embedded into plane.
+
+    plot_persistence_homology(simplex_type="filter") : Plots the persistence homology of mapper simplex
+        constructed either from the filter function map or as a Rips complex from cluster centres
+        positions. Use `simplex_type` : {"filter", "Rips"}.
+
+        Note
+        -------
+        If only a single component is present over the whole filtration (min birth == max death)
+        the persistence barcode does not show anything and persistence diagram does not display correctly.
+        This is due to GUDHI plotting implementation.
+
+    Examples
+    --------
+    >>> from mapper import Mapper
+    >>> import numpy as np
+    >>> n = 100
+    >>> d = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    >>> points = np.vstack((np.cos(d), np.sin(d), np.zeros(n))).T
+    >>> mapper = Mapper(coordinate=1)
+    >>> mapper.fit(points)
+    >>> mapper.plot_graph_in_plane()
+    """
     def __init__(self, **kwargs):
         self.filter = Filter(**kwargs)
         self.cover = Cover(**kwargs)
@@ -64,9 +138,16 @@ class Mapper:
             prev_node_index = node_index - len(interval_clusters)
 
         self._initialise_plotting()
-        self._compute_persistent_homology()
-
         return self.nodes
+
+
+    def fit_predict(self, vertices):
+        """
+        Like `fit`, but returns the mapper graph as dictionary of adjacent vertices.
+        """
+        self.fit(vertices)
+        return self.nodes
+
 
     def _assign_partitions(self):
         "Distributes vertices to cover partitions given by intervals."
@@ -85,6 +166,7 @@ class Mapper:
                     break   # Too large.
                 elif b < n:
                     unused += 1 # Too low.
+
 
     def _initialise_plotting(self):
         self._plot_box_aspect = (
@@ -105,6 +187,7 @@ class Mapper:
 
         self._sc = None
 
+
     def _limit_axis(self, ax):
         if self._coordinate != 0:
             ax.set_xlim3d(*self._plot_lim[0])
@@ -114,33 +197,36 @@ class Mapper:
             ax.set_zlim3d(*self._plot_lim[2])
 
 
-    def _compute_persistent_homology(self):
+    def _compute_persistent_homology(self, simplex_type):
         "Computes persistence homology of the graph."
 
-        # # Compute Rips filtration on vertices.
-        # self._rips = gudhi.RipsComplex(
-        #     points=self.node_vertices,
-        #     max_edge_length=40
-        # )
-        # self._st = self._rips.create_simplex_tree(
-        #     max_dimension=2
-        # )
+        # Compute Rips filtration on vertices.
+        if simplex_type == 'Rips':
+            self._rips = gudhi.RipsComplex(
+                points=self.node_vertices,
+                max_edge_length=40
+            )
+            self._st = self._rips.create_simplex_tree(
+                max_dimension=2
+            )
+        elif simplex_type == 'filter':
+            self._st = gudhi.SimplexTree()
 
-        self._st = gudhi.SimplexTree()
+            # Add artificial triangle.
+            n = len(self.nodes)
+            self._st.insert([0, n, n+1], filtration=self._node_numbers[0])
 
-        # Add artificial triangle.
-        n = len(self.nodes)
-        self._st.insert([0, n, n+1], filtration=self._node_numbers[0])
+            # Add vertices.
+            for i, n in enumerate(self._node_numbers):
+                self._st.insert([i], filtration=n)
 
-        # Add vertices.
-        for i, n in enumerate(self._node_numbers):
-            self._st.insert([i], filtration=n)
-
-        # Add edges.
-        for a, neighbors in self.nodes.items():
-            for b in neighbors:
-                f = max(self._node_numbers[a], self._node_numbers[b])
-                self._st.insert([a, b], filtration=f)
+            # Add edges.
+            for a, neighbors in self.nodes.items():
+                for b in neighbors:
+                    f = max(self._node_numbers[a], self._node_numbers[b])
+                    self._st.insert([a, b], filtration=f)
+        else:
+            raise ValueError(f'Unknown argument must be one of: "Rips", "filter".')
 
         # Compute persistence diagram.
         self.diag = self._st.persistence(
@@ -149,7 +235,7 @@ class Mapper:
         )
 
 
-    def plot_vertices_3d(self):
+    def plot_vertices(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         self._sc = ax.scatter(
@@ -169,17 +255,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_vertices(self):
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        sc = ax.scatter(np.array(self.vertices)[:, 0], np.array(self.vertices)[:, 1], c=self.numbers)
-        ax.set_aspect('equal')
-        fig.suptitle(f'Vertices ({len(self.vertices)})')
-        plt.colorbar(sc)
-        plt.show()
-
-
-    def plot_intervals_3d(self):
+    def plot_intervals(self):
         fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
 
         for i, indices in self.partitions.items():
@@ -206,25 +282,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_intervals(self):
-        fig = plt.figure()
-        ax = fig.subplots(self.n_intervals, sharex=True)
-        n = plt.Normalize(min(self.numbers), max(self.numbers))
-        for i, indices in self.partitions.items():
-            convert_indices = operator.itemgetter(*indices)
-            interval_vertices = convert_indices(self.vertices)
-            interval_numbers = convert_indices(self.numbers)
-
-            ax[self.n_intervals-i-1].scatter(
-                np.array(interval_vertices)[:, 0],
-                np.array(interval_vertices)[:, 1],
-                c=interval_numbers,
-                norm=n
-            )
-        fig.suptitle(f'Intervals ({self.n_intervals})')
-        plt.show()
-
-    def plot_clusters_3d(self):
+    def plot_clusters(self):
         fig = plt.figure(figsize=plt.figaspect(1 / self.n_intervals))
         cluster_count = 0
 
@@ -255,29 +313,7 @@ class Mapper:
         plt.show()
 
 
-    def plot_clusters(self):
-        fig = plt.figure()
-        ax = fig.subplots(self.n_intervals, sharex=True)
-        cluster_count = 0
-
-        for i, indices in self.partitions.items():
-            convert_indices = operator.itemgetter(*indices)
-            interval_vertices = convert_indices(self.vertices)
-            labels, _, cluster_centers = self.clustering(interval_vertices, indices)
-
-            ax[self.n_intervals-i-1].scatter(
-                np.array(interval_vertices)[:, 0],
-                np.array(interval_vertices)[:, 1],
-                c=labels
-            )
-            ax[self.n_intervals-i-1].plot(*zip(*cluster_centers), 'ro', markersize=10)
-            cluster_count += len(cluster_centers)
-
-        fig.suptitle(f'Clusters ({cluster_count})')
-        plt.show()
-
-
-    def plot_graph_3d(self):
+    def plot_graph(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
@@ -338,29 +374,21 @@ class Mapper:
         plt.title(f'Mapper [V = {len(self.node_vertices)}, E = {sum([len(e) for e in self.nodes.values()])}]')
         plt.plot()
 
-    def plot_graph(self):
-        fig, ax = plt.subplots()
-        plt.xlim([np.min(np.array(self.vertices)[:,0]), np.max(np.array(self.vertices)[:,0])])
-        plt.ylim([np.min(np.array(self.vertices)[:,1]), np.max(np.array(self.vertices)[:,1])])
 
-        # Vertices.
-        plt.plot(*zip(*self.node_vertices), 'ko', markersize=10)
-        for a, a_neighors in self.nodes.items():
-            for b in a_neighors:
-                vertex_a = self.node_vertices[a]
-                vertex_b = self.node_vertices[b]
-                plt.plot(
-                    [vertex_a[0], vertex_b[0]],
-                    [vertex_a[1], vertex_b[1]],
-                    color='b',
-                    linewidth=2,
-                    zorder=0
-                )
+    def plot_persistence_homology(self, simplex_type='filter'):
+        """
+        Plots the persistence homology of mapper simplex
+        constructed either from the filter function map or as a Rips complex from cluster centres
+        positions. Use `simplex_type` : {"filter", "Rips"}.
 
-        fig.suptitle(f'Mapper graph')
-        plt.show()
+        Note
+        -------
+        If only a single component is present over the whole filtration (min birth == max death)
+        the persistence barcode does not show anything and persistence diagram does not display correctly.
+        This is due to GUDHI plotting implementation.
+        """
+        self._compute_persistent_homology(simplex_type)
 
-    def plot_persistence_homology(self):
         gudhi.plot_persistence_barcode(self.diag, legend=True)
         plt.show()
 

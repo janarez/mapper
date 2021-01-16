@@ -1,8 +1,8 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+from mapper.mapper import Mapper
 
 
-with open('pliers.txt') as f:
+with open('point_clouds/pliers.txt') as f:
     data = f.readlines()
 
 points = np.array([list(map(float, p.strip().split(' '))) for p in data])
@@ -13,13 +13,13 @@ mapper = Mapper(
     clustering_function="agglomerative",
     linkage="average",
     coordinate=-1,
-    cluster_plot=False,
     max_k=5
 )
 
 graph = mapper.fit(points)
-mapper.plot_vertices_3d()
-mapper.plot_intervals_3d()
-mapper.plot_clusters_3d()
-mapper.plot_graph_3d()
+mapper.plot_vertices()
+mapper.plot_intervals()
+mapper.plot_clusters()
+mapper.plot_graph()
+mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()

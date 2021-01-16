@@ -1,5 +1,5 @@
 import numpy as np
-from mapper_src.mapper import Mapper
+from mapper.mapper import Mapper
 
 def torus():
     u=np.linspace(0,2*np.pi,10)
@@ -26,10 +26,10 @@ mapper = Mapper(
 )
 
 graph = mapper.fit(points)
-mapper.plot_vertices_3d()
-mapper.plot_intervals_3d()
-mapper.plot_clusters_3d()
-mapper.plot_graph_3d()
+mapper.plot_vertices()
+mapper.plot_intervals()
+mapper.plot_clusters()
+mapper.plot_graph()
 mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()
 
@@ -38,14 +38,12 @@ mapper = Mapper(
     bins=4,
     filter_function='by_coordinate',
     coordinate=1,
-    clustering_function='agglomerative',
-    linkage="average"
 )
 
 graph = mapper.fit(points)
-mapper.plot_vertices_3d()
-mapper.plot_intervals_3d()
-mapper.plot_clusters_3d()
-mapper.plot_graph_3d()
+mapper.plot_vertices()
+mapper.plot_intervals()
+mapper.plot_clusters()
+mapper.plot_graph()
 mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()

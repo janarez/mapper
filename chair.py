@@ -2,7 +2,7 @@ import numpy as np
 from mapper import Mapper
 
 
-with open('point_clouds/ant.txt') as f:
+with open('point_clouds/chair.txt') as f:
     data = f.readlines()
 
 points = np.array([list(map(float, p.strip().split(' '))) for p in data])
@@ -10,8 +10,8 @@ points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 
 mapper = Mapper(
     overlap=0.05,
-    filter_function='distance_from_point',
-    point=np.array([60, 80, 60])
+    bins=8,
+    coordinate=1
 )
 
 graph = mapper.fit(points)

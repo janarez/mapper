@@ -1,7 +1,7 @@
 import operator
 import sys
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering, DBSCAN
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 from gudhi.clustering.tomato import Tomato
 
@@ -10,7 +10,7 @@ class Clustering:
     Function clustering vertices to nodes.
     Returns list of node indices for each vertex.
     """
-    def __init__(self, clustering_function='agglomerative', **kwargs):
+    def __init__(self, clustering_function='tomato', **kwargs):
         self._clustering_function = clustering_function
         if clustering_function == 'agglomerative':
             self._clustering = AgglomerativeClustering(
@@ -18,17 +18,18 @@ class Clustering:
                 compute_full_tree=True,
                 linkage=kwargs.get('linkage', 'ward'),
             )
+            # Note that this is general on purpose, so that more
+            # scikit API clustering can be added.
             self._distance_param = 'distance_threshold'
 
-        elif clustering_function == 'DBSCAN':
-            self._clustering = DBSCAN()
-            self._distance_param = 'eps'
-
         elif clustering_function == 'tomato':
-            self._show_diagram = kwargs.get('cluster_plot', False)
+            # Use maximum distance as default.
+            self._distance = kwargs.get('distance', sys.maxsize)
+            return
         else:
-            raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "DBSCAN", "tomato".')
+            raise ValueError(f'Argument `clustering_function` must be one of: "agglomerative", "tomato".')
 
+        # Scikit-learn algorithms settings.
         # If not None clustering is only run for this single value.
         self._distance = kwargs.get('distance', None)
         # Else clusters up to `max_k` are tested.
@@ -47,19 +48,16 @@ class Clustering:
         self._clustering = Tomato(merge_threshold=self._distance)
         self._clustering.fit(vertices)
 
-        if self._show_diagram:
-            self._clustering.plot_diagram()
-            n_clusters = int(input('Set optimal number of clusters: '))
-            self._clustering.n_clusters_ = n_clusters
-
         return self._assign_vertices_to_clusters(vertices, indices)
 
 
     def _scikit_clustering(self, vertices, indices):
         self._clustering.set_params(**{self._distance_param : self._distance})
 
+        # Find optimal number of clusters by silhouette score.
         if self._distance is None:
-            # Find optimal number of clusters by silhouette score.
+            # Base for keeping single cluster.
+            # (experimentally determined by trial and error on several examples, not a strict number)
             opt_sh = 0.6
 
             opt_k = 1

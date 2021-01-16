@@ -261,6 +261,14 @@ More examples can be found in our code repository described in Section~\ref{sec:
 
 \section{Conclusion}\label{sec:concl}
 
+We implemented Mapper algorithm including persistence homology computation and demonstrated it on several examples.
+Our implementation was able to process even large 3D point clouds in negligible time.
+We included implementation of several filter functions and clustering schemes.
+
+However, we only implemented uniform cover and leave other ways of covering as possible future work.
+Similarly, our library is extensible with more filter functions and clustering schemes.
+Finally, we only support 3D point clouds, although that is mainly limitation of our plotting code, the Mapper algorithm itself is fairly general and multi-dimensional point cloud support could be added easily.
+
 \bibliographystyle{IEEEtran}
 \bibliography{bibliography}
 

@@ -50,18 +50,30 @@ class Mapper:
     Methods
     --------
     fit(X) : Fits the mapper from array of 3D points.
-    Must be called before any plotting function.
+        Must be called before any plotting function.
+
     fit_predict(X) : Like `fit`, but returns the mapper graph
-    as dictionary of adjacent vertices.
+        as dictionary of adjacent vertices.
 
     plot_vertices : Plots the initial input points colored by filter value.
+
     plot_intervals : Plots the partitioned input points.
+
     plot_clusters : Plots the clusters within each partition.
+
     plot_graph : Plots the mapper graph inside original 3D space.
+
     plot_graph_in_plane :  Plots the mapper graph embedded into plane.
+
     plot_persistence_homology(simplex_type="filter") : Plots the persistence homology of mapper simplex
-    constructed either from the filter function map or as a Rips complex from cluster centres
-    positions. Use `simplex_type` : {"filter", "Rips"}.
+        constructed either from the filter function map or as a Rips complex from cluster centres
+        positions. Use `simplex_type` : {"filter", "Rips"}.
+
+        Note
+        -------
+        If only a single component is present over the whole filtration (min birth == max death)
+        the persistence barcode does not show anything and persistence diagram does not display correctly.
+        This is due to GUDHI plotting implementation.
 
     Examples
     --------
@@ -364,6 +376,17 @@ class Mapper:
 
 
     def plot_persistence_homology(self, simplex_type='filter'):
+        """
+        Plots the persistence homology of mapper simplex
+        constructed either from the filter function map or as a Rips complex from cluster centres
+        positions. Use `simplex_type` : {"filter", "Rips"}.
+
+        Note
+        -------
+        If only a single component is present over the whole filtration (min birth == max death)
+        the persistence barcode does not show anything and persistence diagram does not display correctly.
+        This is due to GUDHI plotting implementation.
+        """
         self._compute_persistent_homology(simplex_type)
 
         gudhi.plot_persistence_barcode(self.diag, legend=True)

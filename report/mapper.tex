@@ -26,26 +26,26 @@
 Visualization of high-dimensional data is hard.
 In the field of topological data analysis, Mapper~\cite{mapper} is one popular method used for data visualization.
 
-In this report we provide a simple yet fast implementation of Mapper in Python that works on 3D points.
+In this report we provide a simple yet fast implementation of Mapper in Python that works on 3D point clouds.
 
 We describe the Mapper algorithm in Section~\ref{sec:alg}.
 We provide details of our implementation in Section~\ref{sec:impl}.
 We report results of running our implementation on several examples in Section~\ref{sec:res}.
-Finally, we conclude this report in Section~\ref{sec:concl}.
+Final remarks can then be found in Section~\ref{sec:concl}.
 
 \section{Algorithm}\label{sec:alg}
 
 Input to the Mapper algorithm is finite point cloud $X \subset \mathbb{R}^3$.
-We demonstrate how the algorithm works on an example of torus whose points are shown in Figure~\ref{fig:torus-points}.
+We demonstrate how the algorithm works on an example of torus whose point cloud is shown in Figure~\ref{fig:torus-points}.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\columnwidth]{torus-point-cloud}
-    \caption{Point cloud of torus example.}
+    \includegraphics[width=0.5\columnwidth]{torus-point-cloud}
+    \caption{Point cloud of torus.}
     \label{fig:torus-points}
 \end{figure}
 
-The algorithm first applies filter function $f: X \to I$ where $I \subseteq \mathbb{R}$, mapping each point to real space.
+The algorithm first applies filter function $f: X \to I$ where $I \subset \mathbb{R}$, mapping each point to real space.
 Filter function can be arbitrary and its choice usually depends on the input data.
 Commonly used filter functions are
 \begin{itemize}
@@ -59,7 +59,7 @@ Applying filter function to our torus example is demonstrated in Figure~\ref{fig
     \includegraphics[width=0.4\columnwidth]{torus-y-coor}
     \includegraphics[width=0.4\columnwidth]{torus-distance-from-origin}
     \caption{Different filter functions applied to our torus example.
-        Coordinate $y$ is used on the left and distance from origin is used on the right.
+        Coordinate $y$ is used on the left and euclidean distance from origin is used on the right.
         Value of the filter function is illustrated using color range.}
     \label{fig:torus-filter}
 \end{figure}
@@ -67,24 +67,26 @@ Applying filter function to our torus example is demonstrated in Figure~\ref{fig
 We continue by splitting interval $I$ into overlapping bins.
 Formally, we take $\mathcal{U} = \{ U_\alpha \}_{\alpha \in A}$ finite covering of $I$.
 Usually, uniform covering is used.
-Then, it is enough to specify number of bins and ratio of overlap.
-Splitting interval using covering of our torus example is demonstrated in Figure~\ref{fig:torus-cover}.
+Then, it is enough to specify number of bins and percentage of overlap.
+Two covers for our torus example are demonstrated in Figure~\ref{fig:torus-cover}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-25}
     \includegraphics[width=0.9\columnwidth]{torus-partition-4-05}
-    \caption{Different coverings applied to our torus example.
+    \caption{Different covers of the torus example.
         We use 4 bins with 25~\% overlap in the top row and 5~\% overlap in the bottom row.
         We also color vertices by their original filter values.}
     \label{fig:torus-cover}
 \end{figure}
 
-We then perform clustering in each interval obtained from covering.
-Formally, we cluster points $f^{-1}(U_\alpha)$ for each $\alpha \in A$.
-Clustering method can be again arbitrary chosen and its parameters must be tweaked in order to obtain good results in later stages of the algorithm.
-Commonly used clustering schemes include agglomerative clustering (where we can choose for example single or average linkage), K-Means clustering and ToMATo~\cite{tomato}.
-Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
+We then perform clustering of each interval in the cover. Formally, we cluster
+points $f^{-1}(U_\alpha)$ for each $\alpha \in A$. Clustering method can be
+again arbitrary chosen and its parameters must be tweaked in order to obtain
+good results in later stages of the algorithm. Commonly used clustering schemes
+include agglomerative clustering (where we can choose for example single or
+average linkage), K\nobreakdash-Means clustering and ToMATo~\cite{tomato}. Clustering for our
+torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
 
 \begin{figure}[ht]
     \centering
@@ -94,9 +96,10 @@ Clustering our torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
     \label{fig:torus-cluster}
 \end{figure}
 
-Output of the Mapper algorithm is graph $G$ whose vertices are clusters from all $f^{-1}(U_\alpha)$ and
+Output of the Mapper algorithm is graph $G=(V,E)$ whose vertices $V$ are
+clusters from $f^{-1}(U_\alpha)$ for each $\alpha \in A$ and
 $$
-    (u, v) \in E_G \Leftrightarrow u \cap v \neq \emptyset \mbox{,}
+    \forall u, v \in V, u \neq v: (u, v) \in E \Leftrightarrow u \cap v \neq \emptyset \mbox{,}
 $$
 i.e., there is an edge between clusters if there is nonempty intersection between them (which happens thanks to overlaps in $\mathcal{U}$).
 Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:torus-mapper}.
@@ -106,8 +109,8 @@ Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:toru
     \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-3d}
     \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-2d}
     \caption{Mapper graph of our torus example.
-        The same graph is depicted in space on the left and in plane on the right.
-        In space, nodes are positioned at their corresponding cluster centers.
+        The same graph is depicted in 3D space on the left and in plane on the right.
+        In 3D space, nodes are positioned at their corresponding cluster centers.
         We also color nodes by their corresponding filter values.}
     \label{fig:torus-mapper}
 \end{figure}
@@ -115,7 +118,7 @@ Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:toru
 Finally, we treat the resulting Mapper graph as simplicial complex and compute its persistent homology.
 We need filtration to compute persistent homology and we have two obvious approaches for computing filtration from the Mapper graph:
 \begin{enumerate}
-    \item Perform Rips filtration on the graph in space.
+    \item Perform Rips filtration on the graph in 3D space.
     \item Start with empty filtration.
           Add vertices to the filtration incrementally for increasing filter values.
           Formally, add vertex $v$ to filtration at $f(v)$.
@@ -143,8 +146,12 @@ We also include Python scripts for running our implementation on examples presen
 We implement most of the algorithm ourselves, using NumPy~\cite{numpy} for computations and Matplotlib~\cite{matplotlib} and Networkx~\cite{networkx} for plotting.
 However, we use Gudhi~\cite{gudhi} implementation of ToMATo clustering and persistent homology computation and scikit-learn~\cite{scikit} implementation of other clustering schemes.
 
-Our implementation includes basic filter functions (chosen coordinate, distance from point), uniform cover (with number of bins and overlap parameters) and aforementioned clustering schemes (proxy for other libraries).
-Thanks to flexible modular architecture, more filter functions, cover methods and clustering schemes can be implemented and incorporated into our Mapper library easily.
+Our implementation includes basic filter functions (chosen coordinate, distance
+from point), uniform cover (with number of bins and overlap parameters) and
+aforementioned clustering schemes (our own clustering class serves as proxy for other libraries). Thanks to
+flexible modular architecture, more filter functions, cover methods and
+clustering schemes can be implemented and incorporated into our Mapper library
+easily.
 
 We designed our API to be easily comprehensible for people using scikit-learn libraries by following scikit-learn's API style~\cite{scikitAPI}.
 
@@ -221,10 +228,13 @@ The two spirals are well separated (Figure~\ref{fig:spirals-plane}) and clearly 
     \label{fig:spirals}
 \end{figure}
 
-We finally run our Mapper algorithm on complex point cloud of an ant consisting of thirteen thousand vertices (Figure~\ref{fig:ant}).
-As filter function, we use distance from point $(60, 80, 60)$ lying inside the ant's body (Figure~\ref{fig:ant-points}).
-For cover, we use five bins with 5~\% overlap and ToMATo clustering (Figure~\ref{fig:ant-cluster}).
-In the resulting graph, we can see the ant (Figure~\ref{fig:ant-space}), its six legs, tail and two antennae (Figure~\ref{fig:ant-plane}).
+We finally run our Mapper algorithm on complex point cloud of an ant consisting
+of thirteen thousand vertices (Figure~\ref{fig:ant}). As filter function, we use
+distance from point $(60, 80, 60)$ lying inside the ant's body
+(Figure~\ref{fig:ant-points}). For cover, we use five bins with 5~\% overlap and
+ToMATo clustering (Figure~\ref{fig:ant-cluster}). In the resulting graph, we can
+see the ant (Figure~\ref{fig:ant-space}), its six legs, tail and two antennae protruding from its head
+(Figure~\ref{fig:ant-plane}).
 
 \begin{figure}[ht]
     \centering
@@ -256,18 +266,20 @@ In the resulting graph, we can see the ant (Figure~\ref{fig:ant-space}), its six
     \label{fig:ant}
 \end{figure}
 
-We experiment further with other implemented filter functions, cover parameters and clustering schemes.
-More examples can be found in our code repository described in Section~\ref{sec:impl}.
+More of our experiments and examples can be found in our code repository described in Section~\ref{sec:impl}.
 
 \section{Conclusion}\label{sec:concl}
 
 We implemented Mapper algorithm including persistence homology computation and demonstrated it on several examples.
 Our implementation was able to process even large 3D point clouds in negligible time.
-We included implementation of several filter functions and clustering schemes.
 
-However, we only implemented uniform cover and leave other ways of covering as possible future work.
-Similarly, our library is extensible with more filter functions and clustering schemes.
-Finally, we only support 3D point clouds, although that is mainly limitation of our plotting code, the Mapper algorithm itself is fairly general and multi-dimensional point cloud support could be added easily.
+We included implementation of several filter functions and clustering schemes.
+However, we only implemented uniform cover and leave other ways of covering as
+possible future work. Similarly, our library is extensible with more filter
+functions and clustering schemes. Finally, we only support 3D point clouds,
+although that is mainly limitation of our plotting code, the Mapper algorithm
+itself is general and multi-dimensional point cloud support could be added
+easily.
 
 \bibliographystyle{IEEEtran}
 \bibliography{bibliography}

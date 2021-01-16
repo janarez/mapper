@@ -1,0 +1,11 @@
+# LaTeX
+/__latexindent_temp.tex
+/*.aux
+/*.fdb_latexmk
+/*.fls
+/*.log
+/*.out
+/*.pdf
+/*.synctex.gz
+/*.bbl
+/*.blg

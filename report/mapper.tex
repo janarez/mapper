@@ -1,0 +1,338 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[a4paper, total={6in, 9in}]{geometry}
+
+\title{Mapper \\ \vspace{0.2cm} \large Topological Data Analysis}
+\author{Jana Řežábková, Jan Joneš}
+\date{15. 1. 2021}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{graphbox}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+\graphicspath{{./figures/}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Visualization of high-dimensional data is hard.
+In the field of topological data analysis, Mapper~\cite{mapper} is one popular method used for data visualization.
+
+In this report we provide a simple yet fast implementation of Mapper in Python that works on 3D point clouds.
+
+We describe the Mapper algorithm in Section~\ref{sec:alg}.
+We provide details of our implementation in Section~\ref{sec:impl}.
+We report results of running our implementation on several examples in Section~\ref{sec:res}.
+Final remarks can then be found in Section~\ref{sec:concl}.
+
+\section{Algorithm}\label{sec:alg}
+
+Input to the Mapper algorithm is finite point cloud $X \subset \mathbb{R}^3$.
+We demonstrate how the algorithm works on an example of torus whose point cloud is shown in Figure~\ref{fig:torus-points}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\columnwidth]{torus-point-cloud}
+    \caption{Point cloud of torus.}
+    \label{fig:torus-points}
+\end{figure}
+
+The algorithm first applies filter function $f: X \to I$ where $I \subset \mathbb{R}$, mapping each point to real space.
+Filter function can be arbitrary and its choice usually depends on the input data.
+Commonly used filter functions are
+\begin{itemize}
+    \item specific coordinate, e.g., $y$ coordinate $f((x, y, z)) = y$,
+    \item distance from point $\mathbf{p}$, i.e., $f(\mathbf{x}) = \lVert \mathbf{x} - \mathbf{p} \rVert_2$, where origin is usually used as $\mathbf{p}$.
+\end{itemize}
+Applying filter function to our torus example is demonstrated in Figure~\ref{fig:torus-filter}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.35\columnwidth]{torus-y-coor}
+    \includegraphics[width=0.35\columnwidth]{torus-distance-from-origin}
+    \caption{Different filter functions applied to our torus example.
+        Coordinate $y$ is used on the left and euclidean distance from origin is used on the right.
+        Value of the filter function is illustrated using color range.}
+    \label{fig:torus-filter}
+\end{figure}
+
+We continue by splitting interval $I$ into overlapping bins.
+Formally, we take $\mathcal{U} = \{ U_\alpha \}_{\alpha \in A}$ finite covering of $I$.
+Usually, uniform covering is used.
+Then, it is enough to specify number of bins and percentage of overlap.
+Two covers for our torus example are demonstrated in Figure~\ref{fig:torus-cover}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{torus-partition-4-25}
+    \includegraphics[width=0.9\columnwidth]{torus-partition-4-05}
+    \caption{Different covers of the torus example.
+        We use 4 bins with 25~\% overlap in the top row and 5~\% overlap in the bottom row.
+        We also color vertices by their original filter values.}
+    \label{fig:torus-cover}
+\end{figure}
+
+We then perform clustering of each interval in the cover. Formally, we cluster
+points $f^{-1}(U_\alpha)$ for each $\alpha \in A$. Clustering method can be
+again arbitrary chosen and its parameters must be tweaked in order to obtain
+good results in later stages of the algorithm. Commonly used clustering schemes
+include agglomerative clustering (where we can choose for example single or
+average linkage), K\nobreakdash-Means clustering and ToMATo~\cite{tomato}. Clustering for our
+torus example is demonstrated in Figure~\ref{fig:torus-cluster}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{torus-clustering}
+    \caption{Agglomerative clustering with average linkage applied to our torus example.
+        Each cluster's center is represented by bigger red dot.}
+    \label{fig:torus-cluster}
+\end{figure}
+
+Output of the Mapper algorithm is graph $G=(V,E)$ whose vertices $V$ are
+clusters from $f^{-1}(U_\alpha)$ for each $\alpha \in A$ and
+$$
+    \forall u, v \in V, u \neq v: (u, v) \in E \Leftrightarrow u \cap v \neq \emptyset \mbox{,}
+$$
+i.e., there is an edge between clusters if there is nonempty intersection between them (which happens thanks to overlaps in $\mathcal{U}$).
+Resulting Mapper graph for our torus example is depicted in Figure~\ref{fig:torus-mapper}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-3d}
+    \includegraphics[align=c, width=0.4\columnwidth]{torus-graph-2d}
+    \caption{Mapper graph of our torus example.
+        The same graph is depicted in 3D space on the left and in plane on the right.
+        In 3D space, nodes are positioned at their corresponding cluster centers.
+        We also color nodes by their corresponding filter values.}
+    \label{fig:torus-mapper}
+\end{figure}
+
+Finally, we treat the resulting Mapper graph as simplicial complex and compute its persistent homology.
+We need filtration to compute persistent homology and we have two obvious approaches for computing filtration from the Mapper graph:
+\begin{enumerate}
+    \item Perform Rips filtration on the graph in 3D space.
+    \item Start with empty filtration.
+          Add vertices to the filtration incrementally for increasing filter values.
+          Formally, add vertex $v$ to filtration at $f(v)$.
+          Add edge as soon as both of its vertices are added, i.e., add edge $(u, v)$ at $\max\,\{ f(u), f(v) \}$.
+\end{enumerate}
+Persistence diagrams of both approaches applied to our torus example are shown in Figure~\ref{fig:torus-persistence}.
+These diagrams report one component and one cycle which is in line with our expectations for torus.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.33\columnwidth]{torus-rips-barcode}
+    \includegraphics[width=0.33\columnwidth]{torus-rips-persistence-diagram}
+    \includegraphics[width=0.33\columnwidth]{torus-barcode}
+    \includegraphics[width=0.33\columnwidth]{torus-persistence-diagram}
+    \caption{Persistence barcodes and diagrams of our torus example computed using Rips filtration (in the top row) and filter-function-based filtration (in the bottom row).}
+    \label{fig:torus-persistence}
+\end{figure}
+
+\section{Implementation}\label{sec:impl}
+
+We implement the Mapper algorithm as a Python library.
+It contains all steps of the algorithm described in Section~\ref{sec:alg} and also code necessary to plot the corresponding figures and diagrams.
+We also include Python scripts for running our implementation on examples presented in Section~\ref{sec:res} and a few more.
+
+We implement most of the algorithm ourselves, using NumPy~\cite{numpy} for computations and Matplotlib~\cite{matplotlib} and Networkx~\cite{networkx} for plotting.
+However, we use Gudhi~\cite{gudhi} implementation of ToMATo clustering and persistent homology computation and scikit-learn~\cite{scikit} implementation of other clustering schemes.
+
+Our implementation includes basic filter functions (chosen coordinate, distance
+from point), uniform cover (with number of bins and overlap parameters) and
+aforementioned clustering schemes (our own clustering class serves as proxy for other libraries). Thanks to
+flexible modular architecture, more filter functions, cover methods and
+clustering schemes can be implemented and incorporated into our Mapper library
+easily.
+
+We designed our API to be easily comprehensible for people using scikit-learn libraries by following scikit-learn's API style~\cite{scikitAPI}.
+
+All code is available online at \url{https://github.com/janarez/mapper}.
+The repository contains documentation including instructions for using the library and running examples.
+
+\section{Results}\label{sec:res}
+
+We run our Mapper algorithm on a point cloud of human hand consisting of almost thirteen thousand vertices (Figure~\ref{fig:hand}).
+We use $y$ coordinate filter function (Figure~\ref{fig:hand-points}), five bins with 25~\% overlap and ToMATo clustering (Figure~\ref{fig:hand-cluster}).
+The hand is clearly visible in the resulting graph and its five fingers are well separated with the thumb starting earlier than the other four fingers (Figures~\ref{fig:hand-space} and~\ref{fig:hand-plane}).
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-point-cloud}
+        \caption{Point cloud}
+        \label{fig:hand-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-graph-3d}
+        \caption{Graph in space}
+        \label{fig:hand-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:hand-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{hand-clusters}
+        \caption{Clustering}
+        \label{fig:hand-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of hand.}
+    \label{fig:hand}
+\end{figure}
+
+We also run our Mapper algorithm on two spirals with noise (Figure~\ref{fig:spirals}).
+We use $x$ coordinate filter function (Figure~\ref{fig:spirals-points}), seven bins with 4~\% overlap and ToMATo clustering (Figure~\ref{fig:spirals-cluster}).
+The two spirals are well separated (Figure~\ref{fig:spirals-plane}) and clearly visible in the resulting graph (Figure~\ref{fig:spirals-space}).
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-point-cloud}
+        \caption{Point cloud}
+        \label{fig:spirals-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-graph-3d}
+        \caption{Graph in space}
+        \label{fig:spirals-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:spirals-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{spirals-clusters}
+        \caption{Clustering}
+        \label{fig:spirals-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of two spirals with noise.}
+    \label{fig:spirals}
+\end{figure}
+
+Next, we run our Mapper algorithm on a chair point cloud
+(Figure~\ref{fig:chair}). We use $y$ coordinate filter function
+(Figure~\ref{fig:chair-points}) and set number of bins to 8 with 5~\% overlap.
+Again we prefer ToMATo clustering (Figure~\ref{fig:chair-cluster}). The four
+legs and the backrest are clearly visible (Figure~\ref{fig:chair-plane}). The
+3D embedded graph especially nicely resembles a chair (Figure~\ref{fig:chair-space}).
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-point-cloud}
+        \caption{Point cloud}
+        \label{fig:chair-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.25\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-graph-3d}
+        \caption{Graph in space}
+        \label{fig:chair-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:chair-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{chair-clusters}
+        \caption{Clustering}
+        \label{fig:chair-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of chair.}
+    \label{fig:chair}
+\end{figure}
+
+In Figure~\ref{fig:chair-persistence} we show the persistence barcode from the
+filter-function-based filtration of the resulting simplicial complex from the
+chair example. We observe the four components at the start corresponding to four
+chair legs. They then merge into single component as we approach the chair seat.
+In the end a single cycle appears thanks to the backrest.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\columnwidth]{chair-barcode}
+    \caption{Persistence barcode of chair example using filter-function-based filtration.}
+    \label{fig:chair-persistence}
+\end{figure}
+
+We finally run our Mapper algorithm on complex point cloud of an ant consisting
+of thirteen thousand vertices (Figure~\ref{fig:ant}). As filter function, we use
+distance from point $(60, 80, 60)$ lying inside the ant's body
+(Figure~\ref{fig:ant-points}). For cover, we use five bins with 5~\% overlap and
+ToMATo clustering (Figure~\ref{fig:ant-cluster}). In the resulting graph, we can
+see the ant (Figure~\ref{fig:ant-space}), its six legs, tail and two antennae protruding from its head
+(Figure~\ref{fig:ant-plane}).
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-point-cloud}
+        \caption{Point cloud}
+        \label{fig:ant-points}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-graph-3d}
+        \caption{Graph in space}
+        \label{fig:ant-space}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.3\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-graph-2d}
+        \caption{Graph in plane}
+        \label{fig:ant-plane}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.9\columnwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ant-clusters}
+        \caption{Clustering}
+        \label{fig:ant-cluster}
+    \end{subfigure}
+    \caption{Results of running our Mapper algorithm on a point cloud of an ant.}
+    \label{fig:ant}
+\end{figure}
+
+More of our experiments and examples can be found in our code repository described in Section~\ref{sec:impl}.
+
+\section{Conclusion}\label{sec:concl}
+
+We implemented Mapper algorithm including persistence homology computation and demonstrated it on several examples.
+Our implementation was able to process even large 3D point clouds in negligible time.
+
+We included implementation of several filter functions and clustering schemes.
+However, we only implemented uniform cover and leave other ways of covering as
+possible future work. Similarly, our library is extensible with more filter
+functions and clustering schemes. Finally, we only support 3D point clouds,
+although that is mainly limitation of our plotting code, the Mapper algorithm
+itself is general and multi-dimensional point cloud support could be added
+easily.
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
+
+\end{document}

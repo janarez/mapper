@@ -13,7 +13,6 @@ mapper = Mapper(
     clustering_function="agglomerative",
     linkage="average",
     coordinate=-1,
-    cluster_plot=False,
     max_k=5
 )
 
@@ -22,4 +21,5 @@ mapper.plot_vertices()
 mapper.plot_intervals()
 mapper.plot_clusters()
 mapper.plot_graph()
+mapper.plot_graph_in_plane()
 mapper.plot_persistence_homology()

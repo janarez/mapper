@@ -38,8 +38,6 @@ mapper = Mapper(
     bins=4,
     filter_function='by_coordinate',
     coordinate=1,
-    clustering_function='agglomerative',
-    linkage="average"
 )
 
 graph = mapper.fit(points)

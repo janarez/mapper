@@ -8,8 +8,6 @@ points = np.load('point_clouds/spirals.npy')
 mapper = Mapper(
     bins=7,
     overlap=0.04,
-    clustering_function='tomato',
-    distance=200,
     coordinate=0
 )
 

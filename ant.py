@@ -10,8 +10,6 @@ points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 
 mapper = Mapper(
     overlap=0.05,
-    clustering_function='tomato',
-    distance=20,
     filter_function='distance_from_point',
     point=np.array([60, 80, 60])
 )

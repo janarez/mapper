@@ -11,8 +11,6 @@ points = np.array([list(map(float, p.strip().split(' '))) for p in data])
 mapper = Mapper(
     bins=10,
     overlap=0.1,
-    clustering_function='tomato',
-    distance=50,
     coordinate=0
 )
 
